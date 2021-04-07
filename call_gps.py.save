@@ -1,0 +1,7 @@
+import gps_data as gps_time
+
+gps = 
+
+while True:
+
+    print("gps time: {}:{}:{}".format(gps.hours, gps.minutes, gps.seconds))

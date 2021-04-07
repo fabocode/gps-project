@@ -1,0 +1,52 @@
+# ex43.kv
+
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+
+<ListItemButton>:
+    on_press: app.root.change(*args)
+    
+<Ex43>:
+    orientation: 'vertical'
+    #BoxLayout:
+    #    size_hint_y: .1
+    #    Label:
+    #        text: 'Enter String'
+    #    TextInput:
+    #        id: add_box
+    #        multiline: False
+    #        size_hint_x: 5
+    #    Button:
+    #        text: 'Add'
+    #        on_press: root.my_data.append(add_box.text)
+    ListView:
+        size_hint_y: .8
+        adapter:
+            ListAdapter(data=root.data_items, #root.my_data,
+            selection_mode='single',
+            allow_empty_selection=False,
+            cls=ListItemButton)
+            
+
+            #ListAdapter(data= root.my_data, #data_items,
+            #args_converter=list_item_args_converter,
+            #selection_mode='single',
+            #propagate_selection_to_data=False,
+            #allow_empty_selection=False,
+            #list_item_args_converter = lambda row_index, obj: {'text': obj.name,'size_hint_y': None,  'height': 25},
+            #cls=ListItemButton)
+        #canvas.before:
+        #    Color:
+        #        rgb: 1,.5,0
+        #    Rectangle:
+        #        pos: self.pos
+        #        size: self.size
+    #Label:
+    #    size_hint_y: .1
+    #    canvas.before:
+    #        Color:
+    #            rgb: 0,.5,1
+    #        Rectangle:
+    #            pos: self.pos
+    #            size: self.size
+    #    text: root.selected_value
