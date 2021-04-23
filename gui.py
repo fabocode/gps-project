@@ -2267,12 +2267,12 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                         record.numLeg = record.numLeg.value
 
                         # coords for point A
-                        sense.coords_a_x = float(ws['D4'].value)
-                        sense.coords_a_y = float(ws['D5'].value)
-                        sense.coords_b_x = float(ws['E4'].value)
-                        sense.coords_b_y = float(ws['E5'].value)
-                        print("A: {}, {}, type:{}, {}".format(sense.coords_a_x, sense.coords_a_y, type(sense.coords_a_x), type(sense.coords_a_y)))
-                        print("B: {}, {}, type:{}, {}".format(sense.coords_b_x, sense.coords_b_y, type(sense.coords_b_x), type(sense.coords_b_y)))
+                        # sense.coords_a_x = float(ws['D4'].value)
+                        # sense.coords_a_y = float(ws['D5'].value)
+                        # sense.coords_b_x = float(ws['E4'].value)
+                        # sense.coords_b_y = float(ws['E5'].value)
+                        # print("A: {}, {}, type:{}, {}".format(sense.coords_a_x, sense.coords_a_y, type(sense.coords_a_x), type(sense.coords_a_y)))
+                        # print("B: {}, {}, type:{}, {}".format(sense.coords_b_x, sense.coords_b_y, type(sense.coords_b_x), type(sense.coords_b_y)))
 
                         print("the number of leg is: {}".format(record.numLeg))
                         print("type of the leg is: {}".format(type(record.numLeg)))
