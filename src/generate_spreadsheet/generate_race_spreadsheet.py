@@ -49,11 +49,17 @@ def get_time_list(total, speed):
     
     return time_list
 
-def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_miles, target_speed):
+def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_miles, target_speed, number_of_legs, end_1st_leg=0):
     # Create the spreadsheet 
     # filename = r"C:\Users\AIOTIK-005\Desktop\Route_created.xlsx"
     book = Workbook()
     ws = book.active
+
+    # number of legs
+    ws['D1'] = "Number of Legs"
+    ws['D2'] = int(number_of_legs)
+    ws['E1'] = "End of 1st Leg"
+    ws['E2'] = int(end_1st_leg)
 
     # Reference
     ws['H1'] = "REF"
@@ -72,6 +78,8 @@ def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_mil
     ws.column_dimensions['A'].width = 22
     ws.column_dimensions['B'].width = 22
     ws.column_dimensions['C'].width = 22
+    ws.column_dimensions['D'].width = 22
+    ws.column_dimensions['E'].width = 22
     # set sheet name 
     ws.append(["PULSES", "TIME", "MILES"])
 
@@ -110,13 +118,22 @@ def calculate_pulses(tire_size):
     return (63360 / tire_size) / 2         # rotations per mile = (mile in inches / tire circumference) 
                                            # 6336 = 0.1 miles
 
+def get_pulse_by_distance(first_pulse, distance_end_1st_leg):
+    distance_list = []
+    mile_counter = 0
+    while (mile_counter < distance_end_1st_leg):
+        mile_counter += .1
+        mile_counter = round(mile_counter, 1)
+        distance_list.append(mile_counter)
+
+    dist_result = round(first_pulse * len(distance_list), 0)
+    return dist_result
+
 def get_pulses_list(first_pulse, total):
     multiplier = 0
     pulse_list = []
 
-    #while (multiplier < total):
     for i in range(0, total):
-        #pulse_list.append(str(secs2time(time_calc(multiplier, speed))))
         multiplier += 1
         result = round(first_pulse * multiplier, 0)
         pulse_list.append(result)
@@ -146,17 +163,31 @@ def main():
     tire_size = float(input("Input the tire size (inches): "))
     total_length = float(input("Input total race length (miles): "))
     my_speed = float(input("Input target speed (mph): "))
+    number_of_legs = int(input("Input the number of legs (1 or 2) depending of the type of race: "))
     
     # get mile and time list generated 
     mile_list = get_miles_list(total_length)
     timer_list = get_time_list(len(mile_list), my_speed)
     
-    # calculate pulses and get the pulses list
     pulses = calculate_pulses(tire_size)
-    p_list = get_pulses_list(pulses, len(mile_list))
     
-    # save the data into an spreadsheet
-    save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed)
+    if number_of_legs == 1:
+        # calculate pulses and get the pulses list
+        p_list = get_pulses_list(pulses, len(mile_list))
+
+        # save the data into an spreadsheet
+        save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs)
+    elif number_of_legs == 2:
+        # calculate pulses and get the pulses list
+        distance_end_1st_leg = float(input("Enter distance of the end of 1st leg (miles): "))
+        distance_end_1st_leg = get_pulse_by_distance(pulses, distance_end_1st_leg)
+        p_list = get_pulses_list(pulses, len(mile_list))
+        # save the data into an spreadsheet
+        save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_end_1st_leg)
+    else:
+        print("please Input a number of legs valid: (1 o 2)")
+        exit()
+    
 
 
 # run the application
