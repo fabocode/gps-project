@@ -2257,7 +2257,7 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
 
                         del Routes_List_Screen.waypoint_dist_meas_from_datalogger[:]
                         del Routes_List_Screen.waypoint_time[:]
-                        sense.end1StLeg = 0 # Clear the value of the D2 cell on the spreadsheet 
+                        sense.end1StLeg = 0  # Clear the value of the D2 cell on the spreadsheet 
                         record.numLeg = 0    # Clear the value of the C2 cell on the spreadsheet
 
                         sense.end1StLeg = ws['E2'] # Read the value of the D2 cell on the spreadsheet 
@@ -2283,8 +2283,10 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                         for row in ws.iter_rows('A{}:A{}'.format(2, ws.max_row)):  # Set min and max 
                             for cell in row:
                                 if cell.value != None:
-                                    #print("data: {} type of data: {}".format(round(cell.value, 0), type(cell.value)))
-                                    Routes_List_Screen.waypoint_dist_meas_from_datalogger.append(round(cell.value, 0))
+                                    try:
+                                        Routes_List_Screen.waypoint_dist_meas_from_datalogger.append(cell.value)
+                                    except Exception as e:
+                                        print("error here: {}".format(e))
 
                         # Read each cells from B column, we need the lenght to measure how much reads we need to do
                         for row in ws.iter_rows('B{}:B{}'.format(3, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) + 2))):
