@@ -349,8 +349,9 @@ class Input_Number_Inch_Screen(Screen):
                     if TIRE_RADIUS_REF != 0:
                         rotations_per_mile = ((63360 / TIRE_RADIUS_REF))/10         # rotations per mile = (mile in inches / tire circumference) 
                                                                                     # 6336 = 0.1 miles
-                        sense.tire_rotations_per_mile = round((rotations_per_mile * 5), 3)#round((rotations_per_mile * 5), 0) #rotations_per_mile * 5            # 5 = 1 rotation
-                        sense.decimal_factor = sense.tire_rotations_per_mile
+                        sense.tire_rotations_per_mile = round((rotations_per_mile * 5), 3) #round((rotations_per_mile * 5), 0) #rotations_per_mile * 5            # 5 = 1 rotation
+                        sense.decimal_factor = sense.tire_rotations_per_mile 
+                        sense.decimal_factor = Confirmation_Screen_To_Load.get_tire_rotation()
                         print("target pulses or factor {}".format(sense.decimal_factor))
                     guiApp.message_selected = Static_Message.NO_ERROR
             else:
@@ -1012,6 +1013,7 @@ class Main_Screen(Screen):
         global STOP_BUTTON
         global main_loop, input_loop, static_message_loop, race_setup_screen_loop
         try:
+            # print("pulses: {}".format(sense.pulses))
             # ### TODO: IS REQUIRED TO ANALYZE WHY I did call this function 
             # POSSIBLY TO FIND A WAY TO CHANGE FROM SCREENS OVER PYTHON
 
@@ -1313,15 +1315,15 @@ class Main_Screen(Screen):
                         
                     else:
                             
-                        #print("doing my stuff")
+                        print("doing my stuff")
                         if (Routes_List_Screen.waypoint_time[Main_Screen.my_iterator] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.my_iterator] == " "):
-                            pass
+                            print("Routes_List_Screen.waypoint_time[Main_Screen.my_iterator] {}".format(Routes_List_Screen.waypoint_time[Main_Screen.my_iterator]))
                         else:
                             #Main_Screen.comparison = record.get_sec(init_record, str(Routes_List_Screen.waypoint_time[Main_Screen.my_iterator]))  - round(Main_Screen.calculate_time, 2)       
                             self.compareRoutes()
                             #routes.waypoint_comparison_data.append(Main_Screen.comparison)
                             routes.waypoint_comparison_data.append(str(Main_Screen.result))
-                            #print("current data to input in spreadsheet about comparison {}".format(routes.waypoint_comparison_data))
+                            print("current data to input in spreadsheet about comparison {}".format(routes.waypoint_comparison_data))
                         Main_Screen.my_iterator += 1
                         Main_Screen.flag_race_mode = 0
                         Main_Screen.key_1st_leg_end = True
@@ -2236,6 +2238,16 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
     student_list = ObjectProperty()
     key_file_list = False
 
+    tire_size = 0
+    
+    @classmethod
+    def set_tire_rotation(cls, tire_size):
+        cls.tire_size = tire_size
+
+    @classmethod
+    def get_tire_rotation(cls):
+        return cls.tire_size 
+
     def load_file(self):
         
         Save_File_Text_Input_Screen.message_manager = Static_Message.LOADING_LABEL
@@ -2284,10 +2296,12 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                             for cell in row:
                                 if cell.value != None:
                                     try:
-                                        Routes_List_Screen.waypoint_dist_meas_from_datalogger.append(cell.value)
+                                        Routes_List_Screen.waypoint_dist_meas_from_datalogger.append(float(cell.value))
                                     except Exception as e:
                                         print("error here: {}".format(e))
-
+                        self.set_tire_rotation(Routes_List_Screen.waypoint_dist_meas_from_datalogger[0])
+                        sense.decimal_factor = self.get_tire_rotation()
+                        print("tire rotation is: {}".format(self.get_tire_rotation()))
                         # Read each cells from B column, we need the lenght to measure how much reads we need to do
                         for row in ws.iter_rows('B{}:B{}'.format(3, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) + 2))):
                             for cell in row:
@@ -2523,7 +2537,7 @@ def gps_thread():
                                       # to know which type of race will be (1 or 2 leg)
                                     if record.numLeg == 1 or record.numLeg == None:
                                         if sense.pulses >= round(sense.decimal_factor, 0):
-                                            #print("current pulses: {} target pulses {} and distance {}")
+                                            # print("current pulses: {} target pulses {} and distance {}")
                                             difference = sense.pulses - round(sense.decimal_factor, 0)
                                             if difference > 0:
                                                 sense.pulses = sense.pulses - difference
@@ -2533,7 +2547,9 @@ def gps_thread():
                                             sense.dist_meas += 0.1
                                             sense.pulses += 1 
                                             sense.factor += 1
-                                            sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
+                                            # sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
+                                            sense.decimal_factor = (Confirmation_Screen_To_Load.get_tire_rotation() * sense.factor)
+                                            print("decimal factor: {}".format(sense.decimal_factor))
                                         sense.dist_meas = round(sense.dist_meas, 2) # Rounded 2 decimals
                                         if(Routes_List_Screen.preloaded_route_done == 0 and Routes_List_Screen.uploaded == 1): 
                                             if Main_Screen.spIndex < len(Routes_List_Screen.waypoint_dist_meas_from_datalogger):
@@ -2566,7 +2582,7 @@ def gps_thread():
 
                                     elif record.numLeg == 2 or record.numLeg != 0:
                                         if sense.pulses >= round(sense.decimal_factor, 0):
-
+                                            print("start measure ")
                                             difference = sense.pulses - round(sense.decimal_factor, 0)
                                             if difference > 0:
                                                 sense.pulses = sense.pulses - difference
@@ -2575,16 +2591,24 @@ def gps_thread():
                                             sense.dist_meas += 0.1
                                             sense.pulses += 1 
                                             sense.factor += 1
-                                            sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
+                                            # sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
+                                            sense.decimal_factor = (Confirmation_Screen_To_Load.get_tire_rotation() * sense.factor)
+                                            print("decimal factor: {}".format(sense.decimal_factor))
                                         sense.dist_meas = round(sense.dist_meas, 2) # Rounded 2 decimals
                                         if(Routes_List_Screen.preloaded_route_done == 0 and Routes_List_Screen.uploaded == 1): 
+                                            # print("start measure 22")
                                             if Main_Screen.spIndex < len(Routes_List_Screen.waypoint_dist_meas_from_datalogger):
+                                                # print("start measure 333")
                                                 
+                                                # print("waypoint: {} - record.flag_go {}".format(Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], record.flag_go))
                                                 if (sense.pulses >= Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex]) and record.flag_go == 1:
                                                     
+                                                    print("start measure 4")
+                                                    print("pulses {} - waypoint {} - decimal factor: {}".format(sense.pulses, Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], sense.decimal_factor))
                                                     if (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == " "):
                                                         pass
                                                     else:
+                                                        print("start measure 5")
                                                         Main_Screen.comparison = record.get_sec(init_record, str(Routes_List_Screen.waypoint_time[Main_Screen.spIndex])) - round(Main_Screen.current_race_time, 2)  
 
                                                     Main_Screen.final_time = round(Main_Screen.current_race_time, 2)
