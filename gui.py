@@ -1800,6 +1800,9 @@ class Confirmation_Screen_to_Save(Screen):
                 #sheet2.cell(row = 1, column = 2).font = openpyxl.styles.Font(bold = True, italic = True, color = BLACK)
                 #sheet2.column_dimensions['B'].width = 17
 
+                for i, x in enumerate(Routes_List_Screen.waypoint_time):
+                    Routes_List_Screen.waypoint_time[i] = Routes_List_Screen.waypoint_time[i].strftime('%H:%M:%S.%f')
+
                 for row in zip(
                     #routes.waypoint_counter,
                     routes.waypoint_pulses,
