@@ -16,6 +16,9 @@ def install_kivy():
     time.sleep(1) # give time to system to call and end this program 
 
 def setup_touchscreen_input():
+    '''
+        Enable the touch screen feature in display
+    ''' 
     os.system("sed -i '/\[input\]/a hid_%(name)s = probesysfs,provider=hidinput' ~/.kivy/config.ini")
     os.system("sed -i '/\[input\]/a mtdev_%(name)s = probesysfs,provider=mtdev' ~/.kivy/config.ini")
 
