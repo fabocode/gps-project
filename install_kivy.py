@@ -1,11 +1,6 @@
 import os, time 
 
 
-def install_node():
-    os.system('sudo apt update')
-    os.system('curl -sL https://deb.nodesource.com/setup_15.x | bash -')
-    os.system('apt-get install -y nodejs')
-    os.system('clear')
 
 def install_kivy():
     '''
@@ -16,8 +11,8 @@ def install_kivy():
     os.system('sudo apt update')
     os.system('sudo apt install pkg-config libgl1-mesa-dev libgles2-mesa-dev libgstreamer1.0-dev gstreamer1.0-plugins-{bad,base,good,ugly} gstreamer1.0-{omx,alsa} libmtdev-dev xclip xsel libjpeg-dev')
     os.system('sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev')
-    os.system('python -m pip install kivy[base] kivy_examples')
-    os.system('python kivy_importer.py') 
+    os.system('python3 -m pip install kivy[base] kivy_examples')
+    os.system('python3 kivy_importer.py') 
     time.sleep(1) # give time to system to call and end this program 
 
 def setup_touchscreen_input():
@@ -26,7 +21,6 @@ def setup_touchscreen_input():
 
 if __name__ == '__main__':
     try:
-        install_node() # install node 
         install_kivy() # install kivy
         setup_touchscreen_input() # enable touchscreen 
 
