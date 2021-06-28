@@ -1,5 +1,5 @@
 '''
-    NOTE: RUN WITH `sudo`
+    NOTE: Run with `sudo`
 '''
 import os 
 
