@@ -1,7 +1,4 @@
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
-#: import ListAdapter kivy.adapters.listadapter.ListAdapter
-#: import ListItemButton kivy.uix.listview.ListItemButton
-#: import ListItemButton_2 kivy.uix.listview.ListItemButton
 
 Screen_Management:
     id: screen_management
@@ -670,7 +667,7 @@ Screen_Management:
             size: self.size
 
     GridLayout:
-        orientation: 'vertical'
+        orientation: 'lr-tb'
         display: entry_inch
         rows: 6
         padding: 10
@@ -814,21 +811,9 @@ Screen_Management:
 ##############################################################
 ##############################################################
 
-<ListItemButton>:
-    # no seleccionado: .52, .52, .52, 1
-    # selecctionado: .0078, .67, .69, 1
-    selected_color: .0078, .67, .69, 1
-    deselected_color: .52, .52, .52, 1
-    #size: (100, '80dp')
-    size: (800, '50dp')
-    halign: 'left'
-    bold: 1
-    font_size: 25
-    color: .0078,.67,.69,1
-
 # Screen 6: Route List Screen
 <Routes_List_Screen>:
-    student_list: students_list_view
+    
     canvas:
         Color:
             rgb: [.30, .30, .30]
@@ -846,12 +831,6 @@ Screen_Management:
             #font_size: 20
             font_size: 50
             text: root.update_val.loadRouteInList #'DATALOGGER'
-        ListView:
-            #id: data_list_view
-            id: students_list_view
-            size_hint_y: .8
-            adapter:
-                ListAdapter(data = [], cls=ListItemButton)
 
         BoxLayout:
             orientation: 'horizontal'
@@ -898,20 +877,8 @@ Screen_Management:
 ############################################################## 
 ##############################################################
 
-<ListItemButton_2>:
-    # no seleccionado: .52, .52, .52, 1
-    # selecctionado: .0078, .67, .69, 1
-    selected_color: .0078, .67, .69, 1
-    deselected_color: .52, .52, .52, 1
-    #size: (100, '80dp')
-    size: (800, '50dp')
-    halign: 'left'
-    bold: 1
-    font_size: 25
-    color: .0078,.67,.69,1
-
 <File_List_To_Save_Usb>:
-    student_list: students_list_view
+    
     canvas:
         Color:
             rgb: [.30, .30, .30]
@@ -929,12 +896,6 @@ Screen_Management:
             #font_size: 20
             font_size: 45
             text: root.update_val.saveRouteInUSB #'SAVED ROUTES'#'NAME CAN BE ONLY LESS THAN 10 CHARACTERS' #'DATALOGGER'
-        ListView:
-            #id: data_list_view
-            id: students_list_view
-            size_hint_y: .8
-            adapter:
-                ListAdapter(data = [], cls=ListItemButton_2)
 
         BoxLayout:
             orientation: 'horizontal'
@@ -984,7 +945,7 @@ Screen_Management:
 
     GridLayout:
         target_speed: entry_target_speed
-        orientation: 'vertical'
+        orientation: 'lr-tb'
         display: entry_target_speed
         rows: 6
         padding: 10
@@ -1127,7 +1088,7 @@ Screen_Management:
             size: self.size
 
     GridLayout:
-        orientation: 'vertical'
+        orientation: 'lr-tb'
         display: entry_psi
         rows: 6
         padding: 10
@@ -1267,7 +1228,7 @@ Screen_Management:
             size: self.size
 
     GridLayout:
-        orientation: 'vertical'
+        orientation: 'lr-tb'
         display: entry_temp
         rows: 6
         padding: 10
@@ -1407,7 +1368,7 @@ Screen_Management:
             size: self.size
     name: "calculator-setup"
     GridLayout:
-        orientation: 'vertical'
+        orientation: 'lr-tb'
         id: calculator
         display: entry
         rows: 5
