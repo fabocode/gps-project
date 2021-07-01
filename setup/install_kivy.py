@@ -3,6 +3,17 @@ import os, time
 def install_requirements():
     os.system('sudo pip3 install -r requirements.txt')
 
+def setup_gps():
+    '''
+        NOTE: it's also required to do the following:
+            1. Go to terminal 
+            2. type sudo raspi-config
+            3. enable UART 
+            4. Disable the serial login shell console 
+            5. Save and reboot.
+    '''
+    os.system("sed -i '/\[all\]/a dtoverlay=pi3-miniuart-bt' /boot/config.txt")
+
 def install_pigpio():
     os.system('wget https://github.com/joan2937/pigpio/archive/master.zip')
     os.system('unzip master.zip')
@@ -29,12 +40,18 @@ def setup_touchscreen_input():
     os.system("sed -i '/\[input\]/a hid_%(name)s = probesysfs,provider=hidinput' ~/.kivy/config.ini")
     os.system("sed -i '/\[input\]/a mtdev_%(name)s = probesysfs,provider=mtdev' ~/.kivy/config.ini")
 
+def reboot_system():
+    os.system('sudo reboot')
+
 if __name__ == '__main__':
     try:
         install_requirements()
         install_pigpio()
         install_kivy() # install kivy
         setup_touchscreen_input() # enable touchscreen 
+        setup_gps()
+        reboot_system() 
+        
 
     except Exception as e:
         print(f"it does not work: {e}")
