@@ -654,7 +654,8 @@ class Main_Screen(Screen):
     IO.output(record.gps_working, False)
     start_system = 0
     file_path_name = '/home/pi/Documents/tireData/data_input.json'
-    data = json.load(open(file_path_name))
+    # data = json.load(open(file_path_name))
+    data = {"temperature":10, "pressure":0, "size":0}
     data_temp = data["temperature"]
     data_pres = data["pressure"]
     data_size = data["size"]
@@ -1032,7 +1033,7 @@ class Main_Screen(Screen):
                 Main_Screen.rpi_string = subprocess.check_output("/opt/vc/bin/vcgencmd measure_temp", shell = True)
                 Main_Screen.rpi_string = Main_Screen.rpi_string[5:]
                 #print("string: {}".format(Main_Screen.rpi_string))
-                self.update_val.rpi_temp = Main_Screen.rpi_string
+                self.update_val.rpi_temp = str(Main_Screen.rpi_string)
 
             hours   = str(int(gps.hours))
             minutes = str(int(gps.minutes))
@@ -1288,7 +1289,7 @@ class Main_Screen(Screen):
                     #if Main_Screen.my_iterator >= (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) - 1):
                     if Main_Screen.spIndex >= (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) - 1):
                         #global STOP_BUTTON
-                        global STOP_BUTTON
+                        # global STOP_BUTTON
                         STOP_BUTTON = 0
                         Main_Screen.key_stop = True
                         self.update_val.dist_travel = str(sense.dist_meas)
@@ -1358,7 +1359,7 @@ class Save_Confirmation_Screen(Screen):
         iterator_2 = 0
         iterator_3 = 0
         if not os.path.exists(full_path):
-            #print "File path is invalid."
+            #print("File path is invalid.")
             # if temperature data is empty
             if(temperature_input == ""):
                 print("Don't save temperature data")
@@ -1502,7 +1503,7 @@ class Input_Screen(Screen):
         iterator_2 = 0
         iterator_3 = 0
         if not os.path.exists(full_path):
-            print "File path is invalid."
+            print("File path is invalid.")
             # if temperature data is empty
             if(temperature_input == ""):
                 print("Don't save temperature data")
@@ -1545,13 +1546,13 @@ class Input_Screen(Screen):
 
             return False
         elif not os.path.isfile(full_path):
-            print "File does not exist."
+            print("File does not exist.")
             return False
         elif not os.access(full_path, os.R_OK):
-            print "File cannot be read."
+            print("File cannot be read.")
             return False
         else:
-            print "File can be read."
+            print("File can be read.")
             # if temperature data is empty
             if(temperature_input == ""):
                 print("Don't save temperature data")
@@ -1608,7 +1609,7 @@ class Route_Screen(Screen):
                                 check_files = check_files.split("\n")                               # removing the "\n"
                                 os.chdir("/media/pi/" + check_files[0])                             # take directory as reference
                                 for file in glob.glob("*.xlsx"):                                     # Iterate each .txt file recognized
-                                    print "copying from folder"
+                                    print("copying from folder")
                                     # copy each file in the correspondent directory 
                                     #final = subprocess.check_output(("sudo cp /media/pi/" + check_files[0] + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)                             
                                     subprocess.call(("sudo cp /media/pi/" + '"' + check_files[0] + '"' + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)                             
@@ -2750,4 +2751,4 @@ def gps_thread():
 try:
     guiApp().run()
 except IOError:
-    print "IO Error"
+    print("IO Error")
