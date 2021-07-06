@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 # let's wait a bit before starting
 import time
-print("waiting a bit before start gps system")
-time.sleep(30)
-
 import Peripherals as peripherals
 #import pulseCountLog as pulseFunc    # testing library
 from kivy.app import App
@@ -898,6 +895,7 @@ class Main_Screen(Screen):
                 Main_Screen.time_temp_last = time.time()
                 Main_Screen.rpi_string = subprocess.check_output("/opt/vc/bin/vcgencmd measure_temp", shell = True)
                 Main_Screen.rpi_string = Main_Screen.rpi_string[5:]
+                Main_Screen.rpi_string = Main_Screen.rpi_string.decode('utf-8')
                 #print("string: {}".format(Main_Screen.rpi_string))
                 self.update_val.rpi_temp = str(Main_Screen.rpi_string)
 

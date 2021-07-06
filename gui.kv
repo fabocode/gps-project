@@ -106,7 +106,7 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             bold: 1
             color: .0078,.67,.69,1
-            font_size: 60
+            font_size: 40
             text: "REF: RPM"
             #pos_hint: {'x': .6}
             #size_hint: [.4, 1]
@@ -122,7 +122,7 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             bold: 1
             color: .0078,.67,.69,1
-            font_size: 100
+            font_size: 80
             text: root.update_val.timer_update  # race time
             pos_hint: {'x': .2}
             size_hint: [.8, 1]
@@ -132,7 +132,7 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             bold: 1
             color: .0078,.67,.69,1
-            font_size: 100
+            font_size: 80
             text: root.update_val.count_down_up
             pos_hint: {'x': .2}
             size_hint: [.8, 1]
@@ -142,7 +142,7 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             bold: 1
             color: .0078,.67,.69,1
-            font_size: 100
+            font_size: 80
             text: root.update_val.dist_travel
             pos_hint: {'x': .2}
             size_hint: [.8, 1]
@@ -156,7 +156,7 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             bold: 1
             color: root.update_val.current_color
-            font_size: 100
+            font_size: 80
             text: root.update_val.current_value
             pos_hint: {'x': .2}
             size_hint: [.8, 1]
@@ -166,7 +166,7 @@ Screen_Management:
         background_color: .52, .52, .52, 1
         bold: 1
         color: .0078,.67,.69,1
-        font_size: 45
+        font_size: 35
         text: root.update_val.timer_2show_screen
         #pos_hint: {'x': .5, 'y': .8}
         pos_hint: {'x': .45, 'y': .8}
@@ -180,7 +180,7 @@ Screen_Management:
         background_color: .52, .52, .52, 1
         bold: 1
         color: .0078,.67,.69,1
-        font_size: 60
+        font_size: 40
         text: root.update_val.switch_ref
         pos_hint: {'x': .2, 'y': .8}
         #size_hint: .4, .2
@@ -197,14 +197,9 @@ Screen_Management:
         bold: 1
         color: .0078,.67,.69,1
         font_size: 40
-        #text: "RACE\nSETUP\nMODE"
         text: root.update_val.rpi_temp
         size_hint: .2, .3333
         pos_hint: {'x':0, 'y': .3333}
-        #size_hint: .2, .5
-        #pos_hint: {"x": 0, "y": .5}
-        #on_state: toggle_button_mode.text = "RACE\nMODE" if self.state == 'down' else 'RACE\nSETUP\nMODE'
-        #on_state: root.race_mode() if self.state == 'down' else root.race_setup_mode()
 
     # Go to Inputs Screen
     Button:
@@ -216,42 +211,18 @@ Screen_Management:
         size_hint: .2, .3333
         pos_hint: {'x':0, 'y': 0}
         on_release: app.root.current = "route_input_screen_name"
-        text: " INPUTS \n       ->"
+        text: "ROUTES \n      ->"
         font_size: 30
 
-    # GPS Position
+    # Route Selection 
     Button:
-        #background_down: '/images/defaulttheme/button'
-        #background_down: 'atlas://data/images/defaulttheme/button_pressed'
-        #background_down: 'atlas://data/images/defaulttheme/button_disabled'
-        #background_color: root.update_val.gps_color #.52, .52, .52, 1
-        #background_normal: root.update_val.full_color#''
-        #background_down: ''
         background_color: .52, .52, .52, 1
-        #background_normal: ''
         bold: 1
         color: .0078,.67,.69,1
         size_hint: .2, .3333 #.2, .5
         pos_hint: {'x':0, 'y': 0.6666}#{"x": 0, "y": 0}
-        text: root.update_val.text_gps #"   NOT IN \nPOSITION"
-        font_size: 30
-        #on_press: root.show_popup()
-        #size_hint: .2, .3333
-        #pos_hint: {'x':0, 'y': .3333}
-    
-            #color: root.update_val.current_color
-            #font_size: 100
-            #text: root.update_val.current_value
-    #Button:
-    #    #id: timer_indicator
-    #    background_disabled_down: ('0.00.00,000')
-    #    background_color: .52, .52, .52, 1
-    #    bold: 1
-    #    color: .0078,.67,.69,1
-    #    font_size: 100
-    #    text: "ROUTE"#root.update_val.timer_update  # race time
-    #    pos_hint: {'x': .2}
-    #    size_hint: [.8, 1]
+        text: root.update_val.text_gps 
+        font_size: 25
 
 ##############################################################
 ##############################################################
