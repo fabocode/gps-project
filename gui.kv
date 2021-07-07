@@ -241,10 +241,10 @@ Screen_Management:
         bold: 1
         color: .0078,.67,.69,1
         font_size: 30
-        size_hint: .2, .3333
+        size_hint: .2, .5
         #size_hint: .2, .5
-        text: "INPUTS \n      <-"
-        pos_hint: {'x':0, 'y': .3333}
+        text: "HOME \n      <-"
+        pos_hint: {'x':0, 'y': .5}
         #pos_hint: {'x':0, 'y': 0}
         on_release: app.root.current = "main_screen_name"
     Button:
@@ -252,21 +252,10 @@ Screen_Management:
         bold: 1
         color: .0078,.67,.69,1
         font_size: 30
-        size_hint: .2, .3333
-        #size_hint: .2, .5
+        size_hint: .2, .5
         text: " RACE\nSETUP \n     ->"
-        pos_hint: {'x':0, 'y': .6666}
-        #pos_hint: {'x':0, 'y': .5}
-        on_release: app.root.current = "race_setup_screen_name"
-    Button:
-        background_color: .52, .52, .52, 1
-        bold: 1
-        color: .0078,.67,.69,1
-        font_size: 30
-        size_hint: .2, .3333
-        text: "HOME"
         pos_hint: {'x':0, 'y': 0}
-        on_release: app.root.current = "main_screen_name"
+        on_release: app.root.current = "race_setup_screen_name"
 
     BoxLayout:
         orientation: 'vertical'
@@ -279,10 +268,8 @@ Screen_Management:
             pos_hint: {'x': .2}
             size_hint: [.8, 1]
             on_release: app.root.current = "route_list_name"
-            #on_press: root.check()
             on_press: root.check_files_to_load()
             on_release: root.check_for_usb()
-            #on_release: root.load_routes()
         Button:
             background_color: .52, .52, .52, 1
             bold: 1
@@ -303,16 +290,6 @@ Screen_Management:
             size_hint: [.8, 1]
             on_release: app.root.current = "file_list_to_save_usb_screen_name"
             on_press: root.check_save_routes()
-
-        
-        #Button:
-        #    background_color: .52, .52, .52, 1
-        #    bold: 1
-        #    color: .0078,.67,.69,1
-        #    font_size: 50
-        #    text: root.update_val.dist_travel_2
-        #    pos_hint: {'x': .2}
-        #    size_hint: [.8, 1]
         
 ##############################################################
 ##############################################################
@@ -416,7 +393,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text: 'BACK'
-                on_release: app.root.current = "route_input_screen_name" #"race_setup_screen_name"
+                on_release: app.root.current = "route_input_screen_name"
                 on_press: root.uncheck()
             
             Button:
