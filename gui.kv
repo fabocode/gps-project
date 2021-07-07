@@ -107,9 +107,7 @@ Screen_Management:
             bold: 1
             color: .0078,.67,.69,1
             font_size: 40
-            text: "REF: RPM"
-            #pos_hint: {'x': .6}
-            #size_hint: [.4, 1]
+            text: "REF: RPM"                        
             pos_hint: {'x': .7}
             size_hint: [.3, 1]
             on_state: toggle_button.text = "REF: GPS" if self.state == 'down' else 'REF: RPM'
@@ -167,11 +165,8 @@ Screen_Management:
         bold: 1
         color: .0078,.67,.69,1
         font_size: 35
-        text: root.update_val.timer_2show_screen
-        #pos_hint: {'x': .5, 'y': .8}
-        pos_hint: {'x': .45, 'y': .8}
-        #size_hint: .4, .2
-        #size_hint: .2, .2
+        text: root.update_val.timer_2show_screen        
+        pos_hint: {'x': .45, 'y': .8}                
         size_hint: .25, .2
         width: 150
 
@@ -182,9 +177,7 @@ Screen_Management:
         color: .0078,.67,.69,1
         font_size: 40
         text: root.update_val.switch_ref
-        pos_hint: {'x': .2, 'y': .8}
-        #size_hint: .4, .2
-        #size_hint: .3, .2
+        pos_hint: {'x': .2, 'y': .8}                
         size_hint: .25, .2
         width: 150
 
@@ -205,9 +198,7 @@ Screen_Management:
     Button:
         background_color: .52, .52, .52, 1
         bold: 1
-        color: .0078,.67,.69,1
-        #size_hint: .2, .5
-        #pos_hint: {"x": 0, "y": 0}
+        color: .0078,.67,.69,1        
         size_hint: .2, .3333
         pos_hint: {'x':0, 'y': 0}
         on_release: app.root.current = "route_input_screen_name"
@@ -241,11 +232,9 @@ Screen_Management:
         bold: 1
         color: .0078,.67,.69,1
         font_size: 30
-        size_hint: .2, .5
-        #size_hint: .2, .5
+        size_hint: .2, .5        
         text: "HOME \n      <-"
-        pos_hint: {'x':0, 'y': .5}
-        #pos_hint: {'x':0, 'y': 0}
+        pos_hint: {'x':0, 'y': .5}        
         on_release: app.root.current = "main_screen_name"
     Button:
         background_color: .52, .52, .52, 1
@@ -330,13 +319,6 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             pos_hint: {'x': .2}
             size_hint: [.8, .0]
-        #    bold: 1
-        #    color: .0078,.67,.69,1
-        #    font_size: 50
-        #    text: "TARGET SPEED: \n      " + root.update_val.speed_target_indicator + " MPH"
-        #    pos_hint: {'x': .2}
-        #    size_hint: [.8, 1]
-        #    on_release: app.root.current = "input_target_speed_screen_name"
         Button:
             background_color: .52, .52, .52, 1
             disabled: root.update_val.hidePulseMeasure
@@ -348,7 +330,7 @@ Screen_Management:
             size_hint: [.8, 1]
             on_press: root.start_record()
             on_release: root.detach()
-            #on_press: root.start_record()
+            
         Button:
             background_color: .52, .52, .52, 1
             disabled: root.update_val.hidePulseMeasure
@@ -402,17 +384,17 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text: 'LOAD'
-                #on_press: root.open_excel_file()
-                #on_press: root.change_name()
-                #on_press: root.get_file_to_load()
+                
+                
+                
 
                 on_release: root.uncheck()
                 on_press: root.get_file_name_to_load()
                 on_release: if (app.message_selected == 4): app.root.current = "screen_to_show_static_message"
                 on_release: if (app.message_selected != 4): app.root.current = "screen_to_confirm_load"
-                #on_press: root.show_popup() # user message: route was succesfully loaded
-                #on_press: root.refresh_list()
-                #on_release: app.root.current = "race_setup_screen_name"
+                
+                
+                
 
             Button:
                 background_color: .52, .52, .52, 1
@@ -423,8 +405,8 @@ Screen_Management:
                 on_press: root.delete_file()
                 on_release: if(app.message_selected == 3): app.root.current = "screen_to_show_static_message"
                 on_release: if(app.message_selected != 3): app.root.current = "screen_to_confirm_delete"
-                #on_release: app.root.current = "race_setup_screen_name"
-                #on_press: root.refresh_list()
+                
+                
 
 ############################################################## 
 ##############################################################
@@ -460,7 +442,7 @@ Screen_Management:
                 text: 'BACK'
                 on_release: app.root.current = "route_input_screen_name"#"race_setup_screen_name"
                 on_press: root.uncheck()
-                #on_press: root.refresh_list()
+                
             
             Button:
                 background_color: .52, .52, .52, 1
@@ -519,7 +501,7 @@ Screen_Management:
                 font_size: 40
                 text:"1"
                 on_press: if len(entry_target_speed.text) < 6: entry_target_speed.text += self.text
-                #on_press: entry.text += self.text
+                
             Button:
                 background_color: .52, .52, .52, 1
                 bold: 1
@@ -613,7 +595,7 @@ Screen_Management:
                 font_size: 40
                 text:"BACK"
                 on_release: app.root.current = "race_setup_screen_name"
-                #on_press: root.t_speed()
+                
 
             Button:
                 background_color: .52, .52, .52, 1
@@ -661,7 +643,6 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"1"
-                #on_press: entry.text += self.text
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -669,7 +650,6 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"2"
-                #on_press: entry.text += self.text
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -677,7 +657,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"3"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -685,7 +665,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"4"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -693,7 +673,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"5"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -701,7 +681,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"6"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -709,7 +689,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"7"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -717,7 +697,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"8"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -725,7 +705,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"9"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -733,7 +713,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"0"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
         BoxLayout:
             spacing: 10
@@ -743,7 +723,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"Q"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -751,7 +731,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"W"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -759,7 +739,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"E"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -767,7 +747,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"R"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -775,7 +755,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"T"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -783,7 +763,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"Y"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -791,7 +771,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"U"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -799,7 +779,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"I"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -807,7 +787,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"O"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -815,7 +795,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"P"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
         BoxLayout:
             spacing: 10
@@ -825,7 +805,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"A"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -833,7 +813,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"S"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -841,7 +821,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"D"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -849,7 +829,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"F"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -857,7 +837,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"G"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -865,7 +845,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"H"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -873,7 +853,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"J"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -881,7 +861,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"K"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -889,7 +869,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"L"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -907,7 +887,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"Z"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -915,7 +895,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"X"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -923,7 +903,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"C"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -931,7 +911,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"V"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -939,7 +919,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"B"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -947,7 +927,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"N"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -955,7 +935,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 40
                 text:"M"
-                #on_press: entry.text += self.text
+                
                 on_press: if len(entry.text) < 45: entry.text += self.text
             Button:
                 background_color: .52, .52, .52, 1
@@ -963,7 +943,7 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 18
                 text:"SPACE"
-                #on_press: entry.text += " "
+                
                 on_press: if len(entry.text) < 45: entry.text += " "
             Button:
                 background_color: .52, .52, .52, 1
@@ -978,11 +958,11 @@ Screen_Management:
                 color: .0078,.67,.69,1
                 font_size: 18
                 text:"ENTER"
-                #on_release: root.show_save_file_popup()
-                #on_release: app.root.current = "route_input_screen_name"
+                
+                
                 
                 on_release: app.root.current = "screen_to_confirm_save" #"screen_to_show_static_message" #"save_with_usb_id"
-                #on_press: root.save_file() HOLD IT 
+                
                 on_press: root.get_name_of_the_file()
 
 ##############################################################
@@ -998,9 +978,7 @@ Screen_Management:
             size: self.size
     Button:
         background_color: .52, .52, .52, 1
-        bold: 1
-        #color: .0078,.67,.69,1
-        #color: 1,1,1,1
+        bold: 1                
         size_hint: 1, .5
         pos_hint: {"x": 0, "y": .5}
         text: "DO YOU WANT TO SAVE \n       THIS ROUTE?"
@@ -1012,13 +990,12 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             #background_color: 0.015, 0.98, 0, 1
             #background_normal: ''
-            bold: 1
-            #color: 1,1,1,1
+            bold: 1            
             color: .0078,.67,.69,1
             size_hint: 1, .5
             on_release: app.root.current = "screen_to_show_static_message"
             on_press: root.save_file()   # save the route and go back to r
-            #on_press: root.delete_button()
+            
             text: " YES "
             font_size: 120
         Button:
@@ -1027,12 +1004,9 @@ Screen_Management:
             #background_color: 1, 0.16, 0.16, 1
             #background_normal: ''
             #background_color: 1, 0, 0, 1
-            bold: 1
-            #color: 1,1,1, 1
+            bold: 1            
             color: .0078,.67,.69,1
-            size_hint: 1, .5
-            #size_hint: {'x': .5}
-            #pos_hint: {"x": 0, "y": .5}
+            size_hint: 1, .5            
             on_release: app.root.current = "save_file_text_input_screen_name"
             text: " NO "
             font_size: 120
@@ -1047,9 +1021,7 @@ Screen_Management:
             size: self.size
     Button:
         background_color: .52, .52, .52, 1
-        bold: 1
-        #color: .0078,.67,.69,1
-        #color: 1,1,1,1
+        bold: 1                
         color: .0078,.67,.69,1
         size_hint: 1, .5
         pos_hint: {"x": 0, "y": .5}
@@ -1061,15 +1033,12 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             #background_color: 0.015, 0.98, 0, 1
             #background_normal: ''
-            bold: 1
-            #color: 1,1,1,1
+            bold: 1            
             color: .0078,.67,.69,1
             size_hint: 1, .5
-            #pos_hint: {"x": 0, "y": .5}
-            #on_release: app.root.current = "route_input_screen_name"
             on_release: app.root.current = "screen_to_show_static_message"
             on_press: root.load_file()   # save the route and go back to r
-            #on_press: root.delete_button()
+            
             text: " YES "
             font_size: 120
         Button:
@@ -1077,12 +1046,9 @@ Screen_Management:
             #background_color: 1, 0.16, 0.16, 1
             #background_normal: ''
             #background_color: 1, 0, 0, 1
-            bold: 1
-            #color: 1,1,1, 1
+            bold: 1            
             color: .0078,.67,.69,1
-            size_hint: 1, .5
-            #size_hint: {'x': .5}
-            #pos_hint: {"x": 0, "y": .5}
+            size_hint: 1, .5            
             on_release: if(app.message_selected != 255): app.root.current = "save_file_text_input_screen_name"
             on_release: if(app.message_selected == 255): app.root.current = "route_list_name"
             text: " NO "
@@ -1098,9 +1064,7 @@ Screen_Management:
             size: self.size
     Button:
         background_color: .52, .52, .52, 1
-        bold: 1
-        #color: .0078,.67,.69,1
-        #color: 1,1,1,1
+        bold: 1                
         color: .0078,.67,.69,1
         size_hint: 1, .5
         pos_hint: {"x": 0, "y": .5}
@@ -1112,11 +1076,9 @@ Screen_Management:
             background_color: .52, .52, .52, 1
             #background_color: 0.015, 0.98, 0, 1
             #background_normal: ''
-            bold: 1
-            #color: 1,1,1,1
+            bold: 1            
             color: .0078,.67,.69,1
-            size_hint: 1, .5
-            #pos_hint: {"x": 0, "y": .5}
+            size_hint: 1, .5            
             on_press: root.delete_spreadsheet()   # delete the route and go back to r
             on_release: if(app.message_selected == 7): app.root.current = "screen_to_show_static_message" #app.root.current = "screen_to_show_static_message"
             text: " YES "
@@ -1126,12 +1088,9 @@ Screen_Management:
             #background_color: 1, 0.16, 0.16, 1
             #background_normal: ''
             #background_color: 1, 0, 0, 1
-            bold: 1
-            #color: 1,1,1, 1
+            bold: 1            
             color: .0078,.67,.69,1
-            size_hint: 1, .5
-            #size_hint: {'x': .5}
-            #pos_hint: {"x": 0, "y": .5}
+            size_hint: 1, .5            
             on_release: if(app.message_selected != 255): app.root.current = "save_file_text_input_screen_name"
             on_release: if(app.message_selected == 255): app.root.current = "route_list_name"
             text: " NO "
@@ -1147,9 +1106,7 @@ Screen_Management:
             size: self.size
     Button:
         background_color: .52, .52, .52, 1
-        bold: 1
-        #color: .0078,.67,.69,1
-        #color: 1,1,1,1
+        bold: 1                
         color: .0078,.67,.69,1
         size_hint: 1, .5
         pos_hint: {"x": 0, "y": .5}
@@ -1173,13 +1130,10 @@ Screen_Management:
             #background_color: 1, 0.16, 0.16, 1
             #background_normal: ''
             #background_color: 1, 0, 0, 1
-            bold: 1
-            #color: 1,1,1, 1
+            bold: 1            
             color: .0078,.67,.69,1
-            size_hint: 1, .5
-            #size_hint: {'x': .5}
-            #pos_hint: {"x": 0, "y": .5}
-            #on_release: if(app.message_selected != 255): app.root.current = "save_file_text_input_screen_name"
+            size_hint: 1, .5            
+            
             on_release: if(app.message_selected == 254): app.root.current = "file_list_to_save_usb_screen_name"
             text: " NO "
             font_size: 120
@@ -1194,9 +1148,7 @@ Screen_Management:
             size: self.size
     Button:
         background_color: .52, .52, .52, 1
-        bold: 1
-        #color: .0078,.67,.69,1
-        #color: 1,1,1,1
+        bold: 1                
         color: .0078,.67,.69,1
         size_hint: 1, .5
         pos_hint: {"x": 0, "y": .5}
@@ -1220,13 +1172,10 @@ Screen_Management:
             #background_color: 1, 0.16, 0.16, 1
             #background_normal: ''
             #background_color: 1, 0, 0, 1
-            bold: 1
-            #color: 1,1,1, 1
+            bold: 1            
             color: .0078,.67,.69,1
-            size_hint: 1, .5
-            #size_hint: {'x': .5}
-            #pos_hint: {"x": 0, "y": .5}
-            #on_release: if(app.message_selected != 255): app.root.current = "save_file_text_input_screen_name"
+            size_hint: 1, .5            
+            
             on_release: if(app.message_selected != 11): app.root.current = "file_list_to_save_usb_screen_name"
             text: " NO "
             font_size: 120
