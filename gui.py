@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 # let's wait a bit before starting
 import time
-print("waiting a bit before start gps system")
-time.sleep(30)
 
 import Peripherals as peripherals
 #import pulseCountLog as pulseFunc    # testing library
@@ -314,140 +312,6 @@ class Input_Target_Speed_Screen(Screen):
                 guiApp.message_selected = Static_Message.NO_ERROR
         print(Input_Target_Speed_Screen.t_speed_variable)
 
-class Input_Number_Inch_Screen(Screen):
-
-    # inch data
-    save_inch = ObjectProperty()
-    inch = StringProperty('')
-    entry_inch = ""
-    inch_to_load = 0.0
-
-    def save_data_inch(self):
-        global TIRE_RADIUS_REF
-        if(self.save_inch.text == "" or self.save_inch.text == "00" or self.save_inch.text == "000"):
-            self.save_inch.text = ""
-            self.inch = '0'#self.save_inch.text
-            Input_Number_Inch_Screen.inch_to_load = str(float(self.inch))
-            print(self.inch)
-            print("inch to load: {}".format(Input_Number_Inch_Screen.inch_to_load))
-            #self.inch = "0"
-        else:
-            if "." in self.save_inch.text:
-                text_filter = re.findall(r'^[a-zA-Z0-9,]*\.?[a-zA-Z0-9,]*$', self.save_inch.text)
-                print("my text filter gets {}".format(text_filter))
-                if len(text_filter) == 0 or text_filter[0] == ".":
-                    print("you must show a popup")
-                    guiApp.message_selected = Static_Message.INCORRECT_INCH_FORMAT
-                else:
-                    self.inch = self.save_inch.text
-                    Input_Number_Inch_Screen.entry_inch = self.inch
-                    TIRE_RADIUS_REF = float(self.inch)
-                    Input_Number_Inch_Screen.inch_to_load = str(float(self.inch))
-                    print("inch to load 1: {}".format(Input_Number_Inch_Screen.inch_to_load))
-                    print(TIRE_RADIUS_REF)
-                    #circ_inch = (2 * TIRE_RADIUS_REF) * math.pi # Calculate wheel circunsference in Inch
-                    if TIRE_RADIUS_REF != 0:
-                        rotations_per_mile = ((63360 / TIRE_RADIUS_REF))/10         # rotations per mile = (mile in inches / tire circumference) 
-                                                                                    # 6336 = 0.1 miles
-                        sense.tire_rotations_per_mile = round((rotations_per_mile * 5), 3) #round((rotations_per_mile * 5), 0) #rotations_per_mile * 5            # 5 = 1 rotation
-                        sense.decimal_factor = sense.tire_rotations_per_mile 
-                        sense.decimal_factor = Confirmation_Screen_To_Load.get_tire_rotation()
-                        print("target pulses or factor {}".format(sense.decimal_factor))
-                    guiApp.message_selected = Static_Message.NO_ERROR
-            else:
-                self.inch = self.save_inch.text
-                Input_Number_Inch_Screen.entry_inch = self.inch
-                TIRE_RADIUS_REF = float(self.inch)
-                Input_Number_Inch_Screen.inch_to_load = str(float(self.inch))
-                print("inch to load 2: {}".format(Input_Number_Inch_Screen.inch_to_load))
-                print(TIRE_RADIUS_REF)
-                guiApp.message_selected = Static_Message.NO_ERROR
-
-class Input_Number_Psi_Screen(Screen):
-
-    # psi data
-    save_psi = ObjectProperty()
-    psi = StringProperty('')
-    entry_psi = ""
-    press_value = 0
-
-
-    def save_data_psi(self):
-        global TIRE_PRESSURE_REF
-        if(self.save_psi.text == "" or self.save_psi.text == "00" or self.save_psi.text == "000"):
-            self.save_psi.text = "0"
-            self.psi = self.save_psi.text
-            Input_Number_Psi_Screen.entry_psi = self.psi
-            Input_Number_Psi_Screen.press_value = str(float(self.psi))
-            TIRE_PRESSURE_REF = Input_Number_Psi_Screen.press_value
-        else:
-            if "." in self.save_psi.text:
-                text_filter = re.findall(r'^[a-zA-Z0-9,]*\.?[a-zA-Z0-9,]*$', self.save_psi.text)
-                print("my text filter gets {}".format(text_filter))
-                if len(text_filter) == 0 or text_filter[0] == ".":
-                    print("you must show a popup")
-                    guiApp.message_selected = Static_Message.INCORRECT_PRESS_FORMAT
-                else:
-                    print("put a number ")
-                    self.psi = self.save_psi.text
-                    Input_Number_Psi_Screen.entry_psi = self.psi
-                    TIRE_PRESSURE_REF = float(self.psi)
-                    Input_Number_Psi_Screen.press_value = str(float(self.psi))
-                    print("psi to load 1: {}".format(Input_Number_Psi_Screen.press_value))
-                    print(TIRE_PRESSURE_REF)
-                    guiApp.message_selected = Static_Message.NO_ERROR
-            else:
-                print("pteeee")
-                self.psi = self.save_psi.text
-                Input_Number_Psi_Screen.entry_psi = self.psi
-                TIRE_PRESSURE_REF = float(self.psi)
-                Input_Number_Psi_Screen.press_value = str(float(self.psi))
-                print("psi to load 2: {}".format(Input_Number_Psi_Screen.press_value))
-                print(TIRE_PRESSURE_REF)
-                guiApp.message_selected = Static_Message.NO_ERROR
-
-class Input_Number_Temp_Screen(Screen):
-
-    # psi data
-    save_temp = ObjectProperty()
-    temp = StringProperty('')
-    entry_temp = ""
-    temperature_value = 0
-
-    saved_temp = 0
-
-    def save_data_temp(self):
-        global TIRE_TEMPERATURE_REF
-        if(self.save_temp.text == "" or self.save_temp.text == "00" or self.save_temp.text == "000"):
-            self.save_temp.text = "0"
-            self.temp = self.save_temp.text
-            Input_Number_Temp_Screen.entry_temp = self.temp
-            Input_Number_Temp_Screen.temperature_value = str(float(self.temp))
-            TIRE_TEMPERATURE_REF = Input_Number_Temp_Screen.temperature_value
-        else:
-            if "." in self.save_temp.text:
-                text_filter = re.findall(r'^[a-zA-Z0-9,]*\.?[a-zA-Z0-9,]*$', self.save_temp.text)
-                print("my text filter gets {}".format(text_filter))
-                if len(text_filter) == 0 or text_filter[0] == ".":
-                    print("you must show a popup")
-                    guiApp.message_selected = Static_Message.INCORRECT_TEMP_FORMAT
-                else:
-                    print("put a number ")
-                    self.temp = self.save_temp.text
-                    Input_Number_Temp_Screen.entry_temp = self.temp
-                    TIRE_TEMPERATURE_REF = float(self.temp)
-                    Input_Number_Temp_Screen.temperature_value = str(float(self.temp))
-                    print("temp to load 1: {}".format(Input_Number_Temp_Screen.temperature_value))
-                    print(TIRE_TEMPERATURE_REF)
-                    guiApp.message_selected = Static_Message.NO_ERROR
-            else:
-                self.temp = self.save_temp.text
-                Input_Number_Temp_Screen.entry_temp = self.temp
-                TIRE_TEMPERATURE_REF = float(self.temp)
-                Input_Number_Temp_Screen.temperature_value = str(float(self.temp))
-                print("temp to load 2: {}".format(Input_Number_Temp_Screen.temperature_value))
-                print(TIRE_TEMPERATURE_REF)
-                guiApp.message_selected = Static_Message.NO_ERROR
 
 class Routes_List_Screen(Screen):
     update_val = Show_Val()
@@ -1343,254 +1207,6 @@ class Main_Screen(Screen):
         except IOError:
             pass
 
-class Save_Confirmation_Screen(Screen):
-
-    def save_button(self):
-        file_path = "/home/pi/Documents/tireData"
-        file_name = "data_input.json"
-        full_path = file_path + "/" + file_name
-        temperature_input = Input_Number_Temp_Screen.entry_temp
-        pressure_input = Input_Number_Psi_Screen.entry_psi
-        tire_size_input = Input_Number_Inch_Screen.entry_inch
-        data_json = {"temperature": [], "pressure": [], "size": []}
-        Main_Screen.file_path_name = '/home/pi/Documents/tireData/data_input.json'
-        iterator_1 = 0
-        iterator_2 = 0
-        iterator_3 = 0
-        if not os.path.exists(full_path):
-            #print "File path is invalid."
-            # if temperature data is empty
-            if(temperature_input == ""):
-                print("Don't save temperature data")
-            else:
-                data_json["temperature"].append(temperature_input)
-                #data["temperature"] = temperature_input
-                with open(Main_Screen.file_path_name, 'w') as fp:
-                    iterator_1 += 1
-                    json.dump(data_json, fp)
-                    Save_Confirmation_Screen.json_temp = data_json["temperature"]
-                    Main_Screen.data_temp.append(Save_Confirmation_Screen.json_temp)
-                    print("Save_Confirmation_Screen.json_temp: {}".format(Save_Confirmation_Screen.json_temp))
-                    print("DONE!, now the file is created!")
-
-            # if pressure data is empty
-            if(pressure_input == ""):
-                print("Don't save pressure data")
-                #p = CustomPopup_12()
-                #p.show_popup()
-            else:
-                data_json["pressure"].append(pressure_input)
-                #data["pressure"] = pressure_input
-                with open(Main_Screen.file_path_name, 'w') as fp:
-                    iterator_2 += 1
-                    json.dump(data_json, fp)
-                    Save_Confirmation_Screen.json_pres = data_json["pressure"]
-                    print("Save_Confirmation_Screen.json_pres: {}".format(Save_Confirmation_Screen.json_pres))
-                    print("DONE!, now the file is created!")
-
-            # if tire size data is empty
-            if(tire_size_input == ""):
-                print("Don't save temperature data")
-            else:
-                data_json["size"].append(tire_size_input)
-                #data["size"] = tire_size_input
-                with open(Main_Screen.file_path_name, 'w') as fp:
-                    iterator_3 += 1
-                    json.dump(data_json, fp)
-                    Save_Confirmation_Screen.json_inch = data_json["size"]
-                    print("Save_Confirmation_Screen.json_inch: {}".format(Save_Confirmation_Screen.json_inch))
-                    print("DONE!, now the file is created!")
-
-            return False
-        elif not os.path.isfile(full_path):
-            print("File does not exist.")
-            return False
-        elif not os.access(full_path, os.R_OK):
-            print("File cannot be read.")
-            return False
-        else:
-            print("File can be read.")
-            # if temperature data is empty
-            if(temperature_input == ""):
-                print("Don't save temperature data")
-
-            else:
-                with open(Main_Screen.file_path_name, "r+") as data_file:
-                    iterator_1 += 1
-                    data = json.load(open(Main_Screen.file_path_name, "rb"))
-                    data["temperature"].append(temperature_input)
-                    json.dump(data, open(Main_Screen.file_path_name, "wb"))
-                    Input_Number_Temp_Screen.saved_temp = 0
-                    Save_Confirmation_Screen.json_temp = data["temperature"]
-                    Main_Screen.data_temp.append(Save_Confirmation_Screen.json_temp)
-                    print("Save_Confirmation_Screen.json_temp: {}".format(Save_Confirmation_Screen.json_temp))
-
-            # if pressure data is empty
-            if(pressure_input == ""):
-                print("Don't save pressure data")
-            else:
-                with open(Main_Screen.file_path_name, "r+") as data_file:
-                    data = json.load(open(Main_Screen.file_path_name, "rb"))
-                    data["pressure"].append(pressure_input)
-                    json.dump(data, open(Main_Screen.file_path_name, "wb"))
-                    Save_Confirmation_Screen.json_pres = data["pressure"]
-                    Main_Screen.data_pres.append(Save_Confirmation_Screen.json_pres)
-                    print("Save_Confirmation_Screen.json_pres: {}".format(Save_Confirmation_Screen.json_pres))
-            # if tire size data is empty
-            if(tire_size_input == ""):
-                print("Don't save temperature data")
-            else:
-                with open(Main_Screen.file_path_name, "r+") as data_file:
-                    data = json.load(open(Main_Screen.file_path_name, "rb"))
-                    data["size"].append(tire_size_input)
-                    json.dump(data, open(Main_Screen.file_path_name, "wb"))
-                    Save_Confirmation_Screen.json_inch = data["size"]
-                    Main_Screen.data_size.append(Save_Confirmation_Screen.json_inch)
-                    print("Save_Confirmation_Screen.json_inch: {}".format(Save_Confirmation_Screen.json_inch))
-            guiApp.message_selected = Static_Message.TIRE_DATA_SAVED
-            return True
-
-class Delete_Confirmation_Screen(Screen):
-
-    def delete_button(self):
-        file_path = "/home/pi/Documents/tireData"
-        file_name = "data_input.json"
-        data_json = {"temperature": ["0"], "pressure": ["0"], "size": ["0"]}
-        Main_Screen.file_path_name = '/home/pi/Documents/tireData/data_input.json'
-        with open(Main_Screen.file_path_name, 'w') as fp:
-            json.dump(data_json, fp) 
-        guiApp.message_selected = Static_Message.DELETED_TIRE_DATA
-
-class Input_Screen(Screen):
-    update_val = Show_Val()
-
-
-    def update(self, dt):
-        if (STOP_BUTTON == 1):
-            # print("clock func no working ")
-            self.update_val.show_me_data = Main_Screen.saver_data
-            self.update_val.tire_size = str(Input_Number_Inch_Screen.inch_to_load) #str(TIRE_RADIUS_REF) + '"'
-            self.update_val.tpms_temp = str(Main_Screen.temp) + " °F"
-            self.update_val.temperature_indicator = str(Input_Number_Temp_Screen.temperature_value) + " °F"
-            self.update_val.tpms_pressure = (str(Main_Screen.pres_psi) + " Psi")
-            self.update_val.press_indicator = str(Input_Number_Psi_Screen.press_value)
-            TIRE_PRESSURE_REF = float(Main_Screen.pres_psi)
-            sense.speed_calc(init_sense, TIRE_RADIUS_REF, TIRE_PRESSURE_REF)	# Call this function with tire radius as parameter
-
-    def delete_button(self):
-        file_path = "/home/pi/Documents/tireData"
-        file_name = "data_input.json"
-        full_path = file_path + "/" + file_name
-        temperature_input = Input_Number_Temp_Screen.entry_temp
-        pressure_input = Input_Number_Psi_Screen.entry_psi
-        tire_size_input = Input_Number_Inch_Screen.entry_inch
-        data_json = {"temperature": ["0"], "pressure": ["0"], "size": ["0"]}
-        Main_Screen.file_path_name = '/home/pi/Documents/tireData/data_input.json'
-        with open(Main_Screen.file_path_name, 'w') as fp:
-            json.dump(data_json, fp) 
-    
-    def save_button(self):
-        file_path = "/home/pi/Documents/tireData"
-        file_name = "data_input.json"
-        full_path = file_path + "/" + file_name
-        temperature_input = Input_Number_Temp_Screen.entry_temp
-        pressure_input = Input_Number_Psi_Screen.entry_psi
-        tire_size_input = Input_Number_Inch_Screen.entry_inch
-        data_json = {"temperature": [], "pressure": [], "size": []}
-        Main_Screen.file_path_name = '/home/pi/Documents/tireData/data_input.json'
-        iterator_1 = 0
-        iterator_2 = 0
-        iterator_3 = 0
-        if not os.path.exists(full_path):
-            print "File path is invalid."
-            # if temperature data is empty
-            if(temperature_input == ""):
-                print("Don't save temperature data")
-            else:
-                data_json["temperature"].append(temperature_input)
-                #data["temperature"] = temperature_input
-                with open(Main_Screen.file_path_name, 'w') as fp:
-                    iterator_1 += 1
-                    json.dump(data_json, fp)
-                    Save_Confirmation_Screen.json_temp = data_json["temperature"]
-                    Main_Screen.data_temp.append(Save_Confirmation_Screen.json_temp)
-                    print("Save_Confirmation_Screen.json_temp: {}".format(Save_Confirmation_Screen.json_temp))
-                    print("DONE!, now the file is created!")
-
-            # if pressure data is empty
-            if(pressure_input == ""):
-                print("Don't save pressure data")
-            else:
-                data_json["pressure"].append(pressure_input)
-                #data["pressure"] = pressure_input
-                with open(Main_Screen.file_path_name, 'w') as fp:
-                    iterator_2 += 1
-                    json.dump(data_json, fp)
-                    Save_Confirmation_Screen.json_pres = data_json["pressure"]
-                    print("Save_Confirmation_Screen.json_pres: {}".format(Save_Confirmation_Screen.json_pres))
-                    print("DONE!, now the file is created!")
-
-            # if tire size data is empty
-            if(tire_size_input == ""):
-                print("Don't save temperature data")
-            else:
-                data_json["size"].append(tire_size_input)
-                #data["size"] = tire_size_input
-                with open(Main_Screen.file_path_name, 'w') as fp:
-                    iterator_3 += 1
-                    json.dump(data_json, fp)
-                    Save_Confirmation_Screen.json_inch = data_json["size"]
-                    print("Save_Confirmation_Screen.json_inch: {}".format(Save_Confirmation_Screen.json_inch))
-                    print("DONE!, now the file is created!")
-
-            return False
-        elif not os.path.isfile(full_path):
-            print "File does not exist."
-            return False
-        elif not os.access(full_path, os.R_OK):
-            print "File cannot be read."
-            return False
-        else:
-            print "File can be read."
-            # if temperature data is empty
-            if(temperature_input == ""):
-                print("Don't save temperature data")
-            else:
-                with open(Main_Screen.file_path_name, "r+") as data_file:
-                    iterator_1 += 1
-                    data = json.load(open(Main_Screen.file_path_name, "rb"))
-                    data["temperature"].append(temperature_input)
-                    json.dump(data, open(Main_Screen.file_path_name, "wb"))
-                    Input_Number_Temp_Screen.saved_temp = 0
-                    Save_Confirmation_Screen.json_temp = data["temperature"]
-                    Main_Screen.data_temp.append(Save_Confirmation_Screen.json_temp)
-                    print("Save_Confirmation_Screen.json_temp: {}".format(Save_Confirmation_Screen.json_temp))
-
-
-
-            # if pressure data is empty
-            if(pressure_input == ""):
-                print("Don't save pressure data")
-            else:
-                with open(Main_Screen.file_path_name, "r+") as data_file:
-                    data = json.load(open(Main_Screen.file_path_name, "rb"))
-                    data["pressure"].append(pressure_input)
-                    json.dump(data, open(Main_Screen.file_path_name, "wb"))
-                    Save_Confirmation_Screen.json_pres = data["pressure"]
-                    Main_Screen.data_pres.append(Save_Confirmation_Screen.json_pres)
-                    print("Save_Confirmation_Screen.json_pres: {}".format(Save_Confirmation_Screen.json_pres))
-            # if tire size data is empty
-            if(tire_size_input == ""):
-                print("Don't save temperature data")
-            else:
-                with open(Main_Screen.file_path_name, "r+") as data_file:
-                    data = json.load(open(Main_Screen.file_path_name, "rb"))
-                    data["size"].append(tire_size_input)
-                    json.dump(data, open(Main_Screen.file_path_name, "wb"))
-                    Save_Confirmation_Screen.json_inch = data["size"]
-                    Main_Screen.data_size.append(Save_Confirmation_Screen.json_inch)
-                    print("Save_Confirmation_Screen.json_inch: {}".format(Save_Confirmation_Screen.json_inch))
-            return True
 
 class Route_Screen(Screen):
 
@@ -2302,34 +1918,47 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                                         Routes_List_Screen.waypoint_dist_meas_from_datalogger.append(float(cell.value))
                                     except Exception as e:
                                         print("error here: {}".format(e))
-                        self.set_tire_rotation(Routes_List_Screen.waypoint_dist_meas_from_datalogger[0])
-                        sense.decimal_factor = self.get_tire_rotation()
-                        print("tire rotation is: {}".format(self.get_tire_rotation()))
-                        # Read each cells from B column, we need the lenght to measure how much reads we need to do
-                        for row in ws.iter_rows('B{}:B{}'.format(3, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) + 2))):
-                            for cell in row:
-                                #if cell == isinstance(record.numLeg, unicode) == True and 
-                                #print("data: {} type of data: {}".format(cell.value, type(cell.value)))
-                                Routes_List_Screen.waypoint_time.append(cell.value)
-                        print("loaded pulses {}".format(len(Routes_List_Screen.waypoint_dist_meas_from_datalogger)))
-                        print("time loaded {}".format(len(Routes_List_Screen.waypoint_time)))
-                        # exception handler for when the number leg is not valid 
-                        if record.numLeg == 1 and isinstance(record.numLeg, unicode) == False or record.numLeg == "" or record.numLeg == " " or record.numLeg == None:
-                            print("the number of leg is: {} and type {}".format(record.numLeg, type(record.numLeg)))
-                            Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
-                            Routes_List_Screen.uploaded = 1
-                            self.change_name(Routes_List_Screen.file_to_load)
-                            Routes_List_Screen.file_already_loaded = True
-                            guiApp.message_selected = Static_Message.ROUTE_LOADED
-                        elif record.numLeg == 2 and record.numLeg != None and isinstance(record.numLeg, unicode) == False:
-                            print("it's 2nd leg")
-                            if sense.end1StLeg != None and isinstance(sense.end1StLeg, unicode) == False:
-                                print("end of leg is: {} and type {}".format(sense.end1StLeg, type(sense.end1StLeg)))
+
+                        if not Routes_List_Screen.waypoint_dist_meas_from_datalogger:
+                            guiApp.message_selected = Static_Message.INVALID_FORMAT
+                        
+                        else:
+                            self.set_tire_rotation(Routes_List_Screen.waypoint_dist_meas_from_datalogger[0])
+                            sense.decimal_factor = self.get_tire_rotation()
+                            print("tire rotation is: {}".format(self.get_tire_rotation()))
+                            # Read each cells from B column, we need the lenght to measure how much reads we need to do
+                            for row in ws.iter_rows('B{}:B{}'.format(3, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) + 2))):
+                                for cell in row:
+                                    #if cell == isinstance(record.numLeg, unicode) == True and 
+                                    #print("data: {} type of data: {}".format(cell.value, type(cell.value)))
+                                    Routes_List_Screen.waypoint_time.append(cell.value)
+                            print("loaded pulses {}".format(len(Routes_List_Screen.waypoint_dist_meas_from_datalogger)))
+                            print("time loaded {}".format(len(Routes_List_Screen.waypoint_time)))
+                            # exception handler for when the number leg is not valid 
+                            if record.numLeg == 1 and isinstance(record.numLeg, unicode) == False or record.numLeg == "" or record.numLeg == " " or record.numLeg == None:
+                                print("the number of leg is: {} and type {}".format(record.numLeg, type(record.numLeg)))
                                 Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
                                 Routes_List_Screen.uploaded = 1
                                 self.change_name(Routes_List_Screen.file_to_load)
                                 Routes_List_Screen.file_already_loaded = True
                                 guiApp.message_selected = Static_Message.ROUTE_LOADED
+                            elif record.numLeg == 2 and record.numLeg != None and isinstance(record.numLeg, unicode) == False:
+                                print("it's 2nd leg")
+                                if sense.end1StLeg != None and isinstance(sense.end1StLeg, unicode) == False:
+                                    print("end of leg is: {} and type {}".format(sense.end1StLeg, type(sense.end1StLeg)))
+                                    Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
+                                    Routes_List_Screen.uploaded = 1
+                                    self.change_name(Routes_List_Screen.file_to_load)
+                                    Routes_List_Screen.file_already_loaded = True
+                                    guiApp.message_selected = Static_Message.ROUTE_LOADED
+                                else:
+                                    sense.end1StLeg = 0
+                                    record.numLeg = 0
+                                    if Routes_List_Screen.file_already_loaded == True:
+                                        pass
+                                    else:
+                                        Main_Screen.update_val.text_gps = "NO ROUTE \nSELECTED"
+                                    guiApp.message_selected = Static_Message.INVALID_FORMAT
                             else:
                                 sense.end1StLeg = 0
                                 record.numLeg = 0
@@ -2338,14 +1967,6 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                                 else:
                                     Main_Screen.update_val.text_gps = "NO ROUTE \nSELECTED"
                                 guiApp.message_selected = Static_Message.INVALID_FORMAT
-                        else:
-                            sense.end1StLeg = 0
-                            record.numLeg = 0
-                            if Routes_List_Screen.file_already_loaded == True:
-                                pass
-                            else:
-                                Main_Screen.update_val.text_gps = "NO ROUTE \nSELECTED"
-                            guiApp.message_selected = Static_Message.INVALID_FORMAT
 
             except KeyError:
                 sense.end1StLeg = 0
@@ -2491,15 +2112,9 @@ class guiApp(App):
     def build(self):
         global main_loop, input_loop, static_message_loop, race_setup_screen_loop
         screen_1 = Main_Screen()
-        screen_2 = Input_Screen()
         screen_3 = Static_Message()
         screen_4 = Race_Setup_Screen()
-        #screen_5 = Save_File_Text_Input_Screen()
-        #screen_6 = Route_Screen()
-        #Clock.schedule_interval(screen_6.update, 1.0/10.0)
-        #clock_status = Clock.schedule_interval(screen_1.update, 1.0/10.0)
         main_loop = Clock.schedule_interval(screen_1.update, 1.0/10.0)
-        input_loop = Clock.schedule_interval(screen_2.update, 1.0)
         static_message_loop = Clock.schedule_interval(screen_3.update, 1.0)
         race_setup_screen_loop = Clock.schedule_interval(screen_4.update, 1.0)
         sense.gps_thread = threading.Thread(target=gps_thread)  # instance the thread
