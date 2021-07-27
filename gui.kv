@@ -346,6 +346,28 @@ Screen_Management:
 ##############################################################
 
 # Screen 6: Route List Screen
+<SelectableLabel>:
+    # Draw a background to indicate selection
+    bold: True
+    font_size: 40
+    background_color: 1, 0, 0, 1
+    color: .0078,.67,.69,1
+    canvas.before:
+        Color:
+            rgba: (61, 61, 61, .3) if self.selected else (.38, .38, .38, .3)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+<RV>:
+    # optional: ScrollView attributes
+    viewclass: 'SelectableLabel'
+    SelectableRecycleBoxLayout:
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+
 <Routes_List_Screen>:
     
     canvas:
@@ -364,8 +386,9 @@ Screen_Management:
             color: .0078,.67,.69,1
             #font_size: 20
             font_size: 50
-            text: root.update_val.loadRouteInList #'DATALOGGER'
+            text: root.update_val.loadRouteInList 
 
+        RV:
         BoxLayout:
             orientation: 'horizontal'
             size_hint: [1, .2]

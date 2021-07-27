@@ -19,6 +19,11 @@ from kivy.uix.popup import Popup
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
 from kivy.clock import Clock
+from kivy.uix.recycleview import RecycleView
+from kivy.uix.recycleboxlayout import RecycleBoxLayout
+from kivy.uix.behaviors import FocusBehavior
+from kivy.uix.recycleview.layout import LayoutSelectionBehavior
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
 import os, sys, os.path, subprocess, glob
 
 # screens 
@@ -286,6 +291,89 @@ class Input_Target_Speed_Screen(Screen):
                 guiApp.message_selected = Static_Message.NO_ERROR
         print(Input_Target_Speed_Screen.t_speed_variable)
 
+class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
+                                 RecycleBoxLayout):
+    ''' Adds selection and focus behaviour to the view. '''
+    touch_deselect_last = BooleanProperty(True)
+
+class SelectableLabel(RecycleDataViewBehavior, Label):
+    ''' Add selection support to the Label '''
+    index = None
+    selected = BooleanProperty(False)
+    selectable = BooleanProperty(True)
+    rv_file = ""
+
+    def refresh_view_attrs(self, rv, index, data):
+        ''' Catch and handle the view changes '''
+        self.index = index
+        return super(SelectableLabel, self).refresh_view_attrs(
+            rv, index, data)
+
+    def on_touch_down(self, touch):
+        ''' Add selection on touch down '''
+        if super(SelectableLabel, self).on_touch_down(touch):
+            return True
+        if self.collide_point(*touch.pos) and self.selectable:
+            
+            return self.parent.select_with_touch(self.index, touch)
+
+    def apply_selection(self, rv, index, is_selected):
+        ''' Respond to the selection of items in the view. '''
+        self.selected = is_selected
+        if is_selected:
+            print("selection changed to {0}".format(rv.data[index]))
+            SelectableLabel.rv_file = rv.data[index]["text"]
+            print(f"selectable item: {rv.data[index]} - file: {SelectableLabel.rv_file}")
+        else:
+            print("selection removed for {0}".format(rv.data[index]))
+
+class RV(RecycleView):
+    def __init__(self, **kwargs):
+        super(RV, self).__init__(**kwargs)
+        Clock.schedule_interval(self.update_list_data, 1)
+
+    def update_list_data(self, dt):
+        limitLoadFiles = 10
+        if Routes_List_Screen.key_file_list == True:
+            list_1 = []
+            index = -1
+            command = "ls " + os.getcwd() + "/LoadRoute"
+            out = subprocess.check_output(command, shell=True).decode('utf-8')  # test for RPi
+            sp = out.split(".xlsx")
+            if sp: # if list is not empty
+                
+                for i in range(len(sp)):
+                    if(sp[i] != '\n'):
+                        list_1.append(sp[i].strip())
+                if len(list_1) > len(Routes_List_Screen.list_2):
+                    for i in list_1:
+                        for x in Routes_List_Screen.list_2:
+                            if i == x:  
+                                break
+                        else:
+                            # self.student_list.adapter.data.extend([i])
+                            Routes_List_Screen.list_2.append(i)
+
+                if len(list_1) < len(Routes_List_Screen.list_2):
+                    print("current is smaller ")
+                    for i in Routes_List_Screen.list_2: 
+                        for x in list_1: 
+                            if i == x: 
+                                index += 1
+                                break
+                        else:
+                            index += 1
+                            print("item from list 1 {} is NOT in list 2 and I have to delete it and the index is {}".format(i,index))
+                            selection = i
+                            # self.student_list.adapter.data.remove(selection)
+                            del Routes_List_Screen.list_2[index]
+                
+            if len(list_1) > limitLoadFiles:
+                Routes_List_Screen.update_val.loadRouteInList = "PLEASE, REMOVE A FEW ROUTES"
+            else:
+                Routes_List_Screen.update_val.loadRouteInList = "SELECT A ROUTE TO LOAD"    
+            self.data = [{'text': x} for x in Routes_List_Screen.list_2]
+
 
 class Routes_List_Screen(Screen):
     update_val = Show_Val()
@@ -328,7 +416,7 @@ class Routes_List_Screen(Screen):
     #    self.list_item._trigger_reset_populate()
     def __init__(self, **kwargs):
         super(Routes_List_Screen, self).__init__(**kwargs)
-        Clock.schedule_interval(self.update_list_data, 1)
+        # Clock.schedule_interval(self.update_list_data, 1)
 
     def check_for_usb(self):
         #subprocess.call("sudo mount /dev/sda1 /media/pi/ -o uid=pi,gid=pi")
@@ -349,52 +437,60 @@ class Routes_List_Screen(Screen):
                                 os.chdir("/media/pi/" + check_files[0])                             # take directory as reference
                                 for file in glob.glob("*.xlsx"):                                     # Iterate each .txt file recognized
                                     # copy each file in the correspondent directory 
-                                    #final = subprocess.check_output(("sudo cp /media/pi/" + check_files[0] + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)                             
-                                    subprocess.call(("sudo cp /media/pi/" + '"' + check_files[0] + '"' + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)    
+                                    #final = subprocess.check_output(("sudo cp /media/pi/" + check_files[0] + "/" + '"' + file + '"' + "  ~/.gps-project/LoadRoute"), shell = True)                             
+                                    subprocess.call(("sudo cp /media/pi/" + '"' + check_files[0] + '"' + "/" + '"' + file + '"' + " " + os.getcwd() + "/LoadRoute"), shell = True)    
                                     print("done!")
                                 Main_Screen.sc_usb = 1
                                 Main_Screen.get_time_after_copy = time.time()
                                 print("for loop done!")
     
-    def update_list_data(self, dt):
-        limitLoadFiles = 10
-        if Routes_List_Screen.key_file_list == True:
-            #self.check_for_usb()
-            print("testing usb file")
-            list_1 = []
-            index = -1
-            out = subprocess.check_output("ls /home/pi/Documents/LoadRoute", shell=True)  # test for RPi
-            sp = out.split(".xlsx")
+    # def update_list_data(self, dt):
+    #     limitLoadFiles = 10
+    #     if Routes_List_Screen.key_file_list == True:
+    #         #self.check_for_usb()
+    #         print("testing usb file")
+    #         list_1 = []
+    #         index = -1
+    #         command = "ls " + os.getcwd() + "/LoadRoute"
+    #         print(f"command {command}")
+    #         out = subprocess.check_output(command, shell=True).decode('utf-8')  # test for RPi
+    #         sp = out.split(".xlsx")
+    #         print(f"sp {sp} - type {type(sp)}")
+    #         if not sp: # if list is not empty
+    #             print("new file")
+                
 
-            for i in range(len(sp)):
-                if(sp[i] != '\n'):
-                    list_1.append(sp[i].strip())
-            if len(list_1) > len(Routes_List_Screen.list_2):
-                for i in list_1:
-                    for x in Routes_List_Screen.list_2:
-                        if i == x:  
-                            break
-                    else:
-                        self.student_list.adapter.data.extend([i])
-                        Routes_List_Screen.list_2.append(i)
+    #             for i in range(len(sp)):
+    #                 if(sp[i] != '\n'):
+    #                     list_1.append(sp[i].strip())
+    #             if len(list_1) > len(Routes_List_Screen.list_2):
+    #                 for i in list_1:
+    #                     for x in Routes_List_Screen.list_2:
+    #                         if i == x:  
+    #                             break
+    #                     else:
+    #                         self.student_list.adapter.data.extend([i])
+    #                         Routes_List_Screen.list_2.append(i)
 
-            if len(list_1) < len(Routes_List_Screen.list_2):
-                print("current is smaller ")
-                for i in Routes_List_Screen.list_2: 
-                    for x in list_1: 
-                        if i == x: 
-                            index += 1
-                            break
-                    else:
-                        index += 1
-                        print("item from list 1 {} is NOT in list 2 and I have to delete it and the index is {}".format(i,index))
-                        selection = i
-                        self.student_list.adapter.data.remove(selection)
-                        del Routes_List_Screen.list_2[index]
-            if len(list_1) > limitLoadFiles:
-                Routes_List_Screen.update_val.loadRouteInList = "PLEASE, REMOVE A FEW ROUTES"
-            else:
-                Routes_List_Screen.update_val.loadRouteInList = "SELECT A ROUTE TO LOAD"    
+    #             if len(list_1) < len(Routes_List_Screen.list_2):
+    #                 print("current is smaller ")
+    #                 for i in Routes_List_Screen.list_2: 
+    #                     for x in list_1: 
+    #                         if i == x: 
+    #                             index += 1
+    #                             break
+    #                     else:
+    #                         index += 1
+    #                         print("item from list 1 {} is NOT in list 2 and I have to delete it and the index is {}".format(i,index))
+    #                         selection = i
+    #                         self.student_list.adapter.data.remove(selection)
+    #                         del Routes_List_Screen.list_2[index]
+                
+    #             self.ids.route_list_recycleview = [{'text':str(Routes_List_Screen.list_2)}]
+    #             if len(list_1) > limitLoadFiles:
+    #                 Routes_List_Screen.update_val.loadRouteInList = "PLEASE, REMOVE A FEW ROUTES"
+    #             else:
+    #                 Routes_List_Screen.update_val.loadRouteInList = "SELECT A ROUTE TO LOAD"    
 
     def delete_file(self):
         # If a list item is selected
@@ -424,10 +520,12 @@ class Routes_List_Screen(Screen):
                 print("name {}".format(name))
 
     def get_file_name_to_load(self):
-        if self.student_list.adapter.selection:
-            print("this is the file: {}".format(self.student_list.adapter.selection))
+        # if self.student_list.adapter.selection:
+        if SelectableLabel.selected:
+            # print("this is the file: {}".format(self.student_list.adapter.selection))
+            print("this is the file: {}".format(SelectableLabel.rv_file))
             guiApp.message_selected = Static_Message.NO_ERROR
-            Routes_List_Screen.file_to_load = self.student_list.adapter.selection[0].text
+            Routes_List_Screen.file_to_load = SelectableLabel.rv_file
         else:
             print("could not find a file to load :(")
             guiApp.message_selected = Static_Message.NO_FILE_SELECTED 
@@ -618,8 +716,8 @@ class Main_Screen(Screen):
                                 os.chdir("/media/pi/" + check_files[0])                             # take directory as reference
                                 for file in glob.glob("*.xlsx"):                                     # Iterate each .txt file recognized
                                     # copy each file in the correspondent directory 
-                                    #final = subprocess.check_output(("sudo cp /media/pi/" + check_files[0] + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)                             
-                                    subprocess.call(("sudo cp /media/pi/" + '"' + check_files[0] + '"' + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)                             
+                                    #final = subprocess.check_output(("sudo cp /media/pi/" + check_files[0] + "/" + '"' + file + '"' + "  ~/.gps-project/LoadRoute"), shell = True)                             
+                                    subprocess.call(("sudo cp /media/pi/" + '"' + check_files[0] + '"' + "/" + '"' + file + '"' + " " + os.getcwd() + "/LoadRoute"), shell = True)                             
                                     print("done!")
                                 Main_Screen.sc_usb = 1
                                 Main_Screen.get_time_after_copy = time.time()
@@ -1201,8 +1299,8 @@ class Route_Screen(Screen):
                                 for file in glob.glob("*.xlsx"):                                     # Iterate each .txt file recognized
                                     print("copying from folder")
                                     # copy each file in the correspondent directory 
-                                    #final = subprocess.check_output(("sudo cp /media/pi/" + check_files[0] + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)                             
-                                    subprocess.call(("sudo cp /media/pi/" + '"' + check_files[0] + '"' + "/" + '"' + file + '"' + "  /home/pi/Documents/LoadRoute"), shell = True)                             
+                                    #final = subprocess.check_output(("sudo cp /media/pi/" + check_files[0] + "/" + '"' + file + '"' + "  ~/.gps-project/LoadRoute"), shell = True)                             
+                                    subprocess.call(("sudo cp /media/pi/" + '"' + check_files[0] + '"' + "/" + '"' + file + '"' + " " + os.getcwd() + "/LoadRoute"), shell = True)                             
                                     print("done!")
                                 Main_Screen.sc_usb = 1
                                 Main_Screen.get_time_after_copy = time.time()
@@ -1288,9 +1386,10 @@ class Confirmation_Screen_to_Save(Screen):
             ws = book.get_active_sheet()
             #print("this is the text file: {}".format(Save_File_Text_Input_Screen.file_to_save))
             #print("and this is the self.text: {}".format(len(Save_File_Text_Input_Screen.file_to_save)))
-        
+
+            print(f"file to save: {len(Save_File_Text_Input_Screen.file_to_save)}")
             if len(Save_File_Text_Input_Screen.file_to_save) == 0 or Save_File_Text_Input_Screen.file_to_save.isspace() == True:
-                #print("there is nothing here")
+                print("there is nothing here")
                 guiApp.message_selected = Static_Message.INVALID_NAME
             else:
                 #print("there is something")
@@ -1851,7 +1950,7 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
             try:
             # If a list item is selected
                 if Routes_List_Screen.file_to_load:
-                    my_path = "/home/pi/Documents/LoadRoute/"
+                    my_path = os.getcwd() + "/LoadRoute/"
                     if len(Routes_List_Screen.file_to_load) == 0:
                         pass
                     else:
@@ -1899,22 +1998,22 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                         # Read each cells from B column, we need the lenght to measure how much reads we need to do
                         for row in ws.iter_rows('B{}:B{}'.format(3, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) + 2))):
                             for cell in row:
-                                #if cell == isinstance(record.numLeg, unicode) == True and 
+                                #if cell == isinstance(record.numLeg, str) == True and 
                                 #print("data: {} type of data: {}".format(cell.value, type(cell.value)))
                                 Routes_List_Screen.waypoint_time.append(cell.value)
                         print("loaded pulses {}".format(len(Routes_List_Screen.waypoint_dist_meas_from_datalogger)))
                         print("time loaded {}".format(len(Routes_List_Screen.waypoint_time)))
                         # exception handler for when the number leg is not valid 
-                        if record.numLeg == 1 and isinstance(record.numLeg, unicode) == False or record.numLeg == "" or record.numLeg == " " or record.numLeg == None:
+                        if record.numLeg == 1 and isinstance(record.numLeg, str) == False or record.numLeg == "" or record.numLeg == " " or record.numLeg == None:
                             print("the number of leg is: {} and type {}".format(record.numLeg, type(record.numLeg)))
                             Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
                             Routes_List_Screen.uploaded = 1
                             self.change_name(Routes_List_Screen.file_to_load)
                             Routes_List_Screen.file_already_loaded = True
                             guiApp.message_selected = Static_Message.ROUTE_LOADED
-                        elif record.numLeg == 2 and record.numLeg != None and isinstance(record.numLeg, unicode) == False:
+                        elif record.numLeg == 2 and record.numLeg != None and isinstance(record.numLeg, str) == False:
                             print("it's 2nd leg")
-                            if sense.end1StLeg != None and isinstance(sense.end1StLeg, unicode) == False:
+                            if sense.end1StLeg != None and isinstance(sense.end1StLeg, str) == False:
                                 print("end of leg is: {} and type {}".format(sense.end1StLeg, type(sense.end1StLeg)))
                                 Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
                                 Routes_List_Screen.uploaded = 1
@@ -1998,7 +2097,7 @@ class Confirmation_Screen_To_Delete(Screen):    # screen to confirm to delete a 
         if Routes_List_Screen.file_to_delete:
             # Get the text from the item selected
             selection = Routes_List_Screen.file_to_delete
-            deleted_file = "rm /home/pi/Documents/LoadRoute/" + '"' + selection + '"' + ".xlsx"
+            deleted_file = "rm " + " " + os.getcwd() + "/LoadRoute/" + '"' + selection + '"' + ".xlsx"
             # Remove the matching item
             print("selection {}".format(selection))
             subprocess.call(deleted_file, shell = True)
@@ -2074,7 +2173,7 @@ class Screen_Management(ScreenManager):
     mc = ObjectProperty(None)
     loading_screen = ObjectProperty(None)
 
-presentation = 0 # Builder.load_file("gui.kv")
+presentation = 0 
 
 class guiApp(App):
     message_selected = 0
