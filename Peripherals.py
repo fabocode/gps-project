@@ -199,7 +199,7 @@ class Sensors:
         return lst[1:] == lst[:-1]
 
     # Function to calculate MPH once RPM and the Tire size is known
-    def speed_calc(self, TIRE_RADIUS_REF, TIRE_PRESSURE_REF):
+    def speed_calc(self):
         
         diff_temp = 0
         PsiSum = 0
