@@ -21,7 +21,6 @@ import time
 import math
 import ctypes
 #integrals import
-from sympy import Integral, Symbol
 from geopy.distance import great_circle
 #bluetooth imports
 import pexpect
@@ -91,7 +90,6 @@ class Sensors:
     list_longitude = []
     gps_distance_average = 0
     # for integral test
-    t = Symbol('t')
     my_miles = 0
 
     rotate = 0
@@ -201,7 +199,7 @@ class Sensors:
         return lst[1:] == lst[:-1]
 
     # Function to calculate MPH once RPM and the Tire size is known
-    def speed_calc(self, TIRE_RADIUS_REF, TIRE_PRESSURE_REF):
+    def speed_calc(self):
         
         diff_temp = 0
         PsiSum = 0
