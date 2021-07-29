@@ -1867,6 +1867,10 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
     def get_tire_rotation(cls):
         return cls.tire_size 
 
+    def get_seconds_from_gps(self, t_str):
+        h, m, s = t_str.split(":")
+        return int(h) * 3600 + int(m) * 60 + round(float(s), 2)
+
     def load_file(self):
         
         Save_File_Text_Input_Screen.message_manager = Static_Message.LOADING_LABEL
@@ -1919,10 +1923,12 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                                     except Exception as e:
                                         print("error here: {}".format(e))
 
+                        # sense.speed_calc(init_sense)	# Call this function with tire radius as parameter
                         if not Routes_List_Screen.waypoint_dist_meas_from_datalogger:
                             guiApp.message_selected = Static_Message.INVALID_FORMAT
                         
                         else:
+                            # sense.speed_calc(init_sense)	# Call this function with tire radius as parameter
                             self.set_tire_rotation(Routes_List_Screen.waypoint_dist_meas_from_datalogger[0])
                             sense.decimal_factor = self.get_tire_rotation()
                             print("tire rotation is: {}".format(self.get_tire_rotation()))
@@ -1942,6 +1948,19 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                                 self.change_name(Routes_List_Screen.file_to_load)
                                 Routes_List_Screen.file_already_loaded = True
                                 guiApp.message_selected = Static_Message.ROUTE_LOADED
+
+                                sense.startReadPulses = True
+                                sense.pulses = 0 #sense.decimal_num 
+                                sense.pulseAmount = sense.decimal_num 
+                                sense.current_decimal_factor = sense.whole_num + sense.decimal_num
+                                #sense.decimal_factor = sense.whole_num + sense.decimal_num
+                                sense.dist_meas = 0
+                                sense.counter_rotations = 0
+                                record.stop_tm = True
+                                # Set the actual time as a reference
+                                record.start_2_count = self.get_seconds_from_gps(record.time_string) #- .85 #- .8 #- .95  # .95 
+                                record.set_record_time = self.get_seconds_from_gps(record.time_string)#time.time() #record.get_sec(record,record.time_string) #time.time()
+                                record.recording_status_flag = True # It will not refresh the reference record time until record has finished
                             elif record.numLeg == 2 and record.numLeg != None and isinstance(record.numLeg, unicode) == False:
                                 print("it's 2nd leg")
                                 if sense.end1StLeg != None and isinstance(sense.end1StLeg, unicode) == False:
@@ -1950,6 +1969,11 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                                     Routes_List_Screen.uploaded = 1
                                     self.change_name(Routes_List_Screen.file_to_load)
                                     Routes_List_Screen.file_already_loaded = True
+
+                                    record.recording_status_flag = True # It will not refresh the reference record time until record has finished
+                                    sense.startReadPulses = True
+                                    record.start_2_count = self.get_seconds_from_gps(record.time_string) #- .85 #- .8 #- .95  # .95 
+                                    record.set_record_time = self.get_seconds_from_gps(record.time_string)
                                     guiApp.message_selected = Static_Message.ROUTE_LOADED
                                 else:
                                     sense.end1StLeg = 0
@@ -2147,112 +2171,115 @@ def gps_thread():
             if STOP_BUTTON == 1:
                 Main_Screen.stable_gps_result = int(time.time() - Main_Screen.stable_gps)
             if record.recording_status_flag == True:
+                # print("hello 4")
                 if sense.switch_mph_reference == False:   
+                    # print("hello 3")
                     if STOP_BUTTON == 1:
+                        # print("hello 2")
                         if sense.elapse != 0: # This condition is to prevent zero division
-                            if TIRE_RADIUS_REF != 0:
-                                if sense.decimal_factor != 0:
-                                      # to know which type of race will be (1 or 2 leg)
-                                    if record.numLeg == 1 or record.numLeg == None:
-                                        if sense.pulses >= round(sense.decimal_factor, 0):
-                                            # print("current pulses: {} target pulses {} and distance {}")
-                                            difference = sense.pulses - round(sense.decimal_factor, 0)
-                                            if difference > 0:
-                                                sense.pulses = sense.pulses - difference
-                                            elif difference < 0:
-                                                sense.pulses = sense.pulses + (-difference)
-                                            #print("dist meas!!")
-                                            sense.dist_meas += 0.1
-                                            sense.pulses += 1 
-                                            sense.factor += 1
-                                            # sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
-                                            sense.decimal_factor = (Confirmation_Screen_To_Load.get_tire_rotation() * sense.factor)
-                                            print("decimal factor: {}".format(sense.decimal_factor))
-                                        sense.dist_meas = round(sense.dist_meas, 2) # Rounded 2 decimals
-                                        if(Routes_List_Screen.preloaded_route_done == 0 and Routes_List_Screen.uploaded == 1): 
-                                            if Main_Screen.spIndex < len(Routes_List_Screen.waypoint_dist_meas_from_datalogger):
-                                                if (sense.pulses >= Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex]) and record.flag_go == 1:
-                                                    if (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == " "):
-                                                        pass
-                                                    else:
-                                                        Main_Screen.comparison = record.get_sec(init_record, str(Routes_List_Screen.waypoint_time[Main_Screen.spIndex])) - round(Main_Screen.current_race_time, 2)  
-                                                        #print("comparison!!! {}".format(Main_Screen.comparison))
-                                                        #print("current time: {}".format(Main_Screen.current_race_time))
-                                                    #print("recorded time {}:{}:{}".format(int(record.recorded_time["hours"]),
-                                                    #    int(record.recorded_time["minutes"]),
-                                                    #    round(record.recorded_time["seconds"], 3)))
-                                                    Main_Screen.final_time = round(Main_Screen.current_race_time, 2)
-                                                    Main_Screen.record_time = str(datetime.timedelta(seconds = Main_Screen.final_time))
-                                                    Main_Screen.record_time = Main_Screen.record_time[:10]
-                                                    #print("other recorded time to log {}".format(Main_Screen.record_time))
-                                                    #print("time {}".format(Main_Screen.final_time))
-                                                    routes.get_data(
-                                                        routes_data,
-                                                        sense.pulses,#round(record.mph_accurate, 3),
-                                                        int(record.mph_accurate),
-                                                        round(sense.dist_meas, 1),
-                                                        gps.latitude,
-                                                        gps.longitude,
-                                                        Main_Screen.record_time)
-                                                    Main_Screen.flag_race_mode = 1
-                                                    sense.aux_dist += 0.2
-                                                    Main_Screen.spIndex += 1
+                            # if TIRE_RADIUS_REF != 0:
+                            if sense.decimal_factor != 0:
+                                    # to know which type of race will be (1 or 2 leg)
+                                if record.numLeg == 1 or record.numLeg == None:
+                                    if sense.pulses >= round(sense.decimal_factor, 0):
+                                        print("current pulses: {} target pulses {} and distance {}")
+                                        difference = sense.pulses - round(sense.decimal_factor, 0)
+                                        if difference > 0:
+                                            sense.pulses = sense.pulses - difference
+                                        elif difference < 0:
+                                            sense.pulses = sense.pulses + (-difference)
+                                        #print("dist meas!!")
+                                        sense.dist_meas += 0.1
+                                        sense.pulses += 1 
+                                        sense.factor += 1
+                                        # sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
+                                        sense.decimal_factor = (Confirmation_Screen_To_Load.get_tire_rotation() * sense.factor)
+                                        print("decimal factor: {}".format(sense.decimal_factor))
+                                    sense.dist_meas = round(sense.dist_meas, 2) # Rounded 2 decimals
+                                    if(Routes_List_Screen.preloaded_route_done == 0 and Routes_List_Screen.uploaded == 1): 
+                                        if Main_Screen.spIndex < len(Routes_List_Screen.waypoint_dist_meas_from_datalogger):
+                                            if (sense.pulses >= Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex]) and record.flag_go == 1:
+                                                if (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == " "):
+                                                    pass
+                                                else:
+                                                    Main_Screen.comparison = record.get_sec(init_record, str(Routes_List_Screen.waypoint_time[Main_Screen.spIndex])) - round(Main_Screen.current_race_time, 2)  
+                                                    #print("comparison!!! {}".format(Main_Screen.comparison))
+                                                    #print("current time: {}".format(Main_Screen.current_race_time))
+                                                #print("recorded time {}:{}:{}".format(int(record.recorded_time["hours"]),
+                                                #    int(record.recorded_time["minutes"]),
+                                                #    round(record.recorded_time["seconds"], 3)))
+                                                Main_Screen.final_time = round(Main_Screen.current_race_time, 2)
+                                                Main_Screen.record_time = str(datetime.timedelta(seconds = Main_Screen.final_time))
+                                                Main_Screen.record_time = Main_Screen.record_time[:10]
+                                                #print("other recorded time to log {}".format(Main_Screen.record_time))
+                                                #print("time {}".format(Main_Screen.final_time))
+                                                routes.get_data(
+                                                    routes_data,
+                                                    sense.pulses,#round(record.mph_accurate, 3),
+                                                    int(record.mph_accurate),
+                                                    round(sense.dist_meas, 1),
+                                                    gps.latitude,
+                                                    gps.longitude,
+                                                    Main_Screen.record_time)
+                                                Main_Screen.flag_race_mode = 1
+                                                sense.aux_dist += 0.2
+                                                Main_Screen.spIndex += 1
 
-                                    elif record.numLeg == 2 or record.numLeg != 0:
-                                        if sense.pulses >= round(sense.decimal_factor, 0):
-                                            print("start measure ")
-                                            difference = sense.pulses - round(sense.decimal_factor, 0)
-                                            if difference > 0:
-                                                sense.pulses = sense.pulses - difference
-                                            elif difference < 0:
-                                                sense.pulses = sense.pulses + (-difference)
-                                            sense.dist_meas += 0.1
-                                            sense.pulses += 1 
-                                            sense.factor += 1
-                                            # sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
-                                            sense.decimal_factor = (Confirmation_Screen_To_Load.get_tire_rotation() * sense.factor)
-                                            print("decimal factor: {}".format(sense.decimal_factor))
-                                        sense.dist_meas = round(sense.dist_meas, 2) # Rounded 2 decimals
-                                        if(Routes_List_Screen.preloaded_route_done == 0 and Routes_List_Screen.uploaded == 1): 
-                                            # print("start measure 22")
-                                            if Main_Screen.spIndex < len(Routes_List_Screen.waypoint_dist_meas_from_datalogger):
-                                                # print("start measure 333")
+                                elif record.numLeg == 2 or record.numLeg != 0:
+                                    if sense.pulses >= round(sense.decimal_factor, 0):
+                                        print("start measure ")
+                                        difference = sense.pulses - round(sense.decimal_factor, 0)
+                                        if difference > 0:
+                                            sense.pulses = sense.pulses - difference
+                                        elif difference < 0:
+                                            sense.pulses = sense.pulses + (-difference)
+                                        sense.dist_meas += 0.1
+                                        sense.pulses += 1 
+                                        sense.factor += 1
+                                        # sense.decimal_factor = round((sense.tire_rotations_per_mile * sense.factor), 0)
+                                        sense.decimal_factor = (Confirmation_Screen_To_Load.get_tire_rotation() * sense.factor)
+                                        print("decimal factor: {}".format(sense.decimal_factor))
+                                    sense.dist_meas = round(sense.dist_meas, 2) # Rounded 2 decimals
+                                    if(Routes_List_Screen.preloaded_route_done == 0 and Routes_List_Screen.uploaded == 1): 
+                                        # print("start measure 22")
+                                        if Main_Screen.spIndex < len(Routes_List_Screen.waypoint_dist_meas_from_datalogger):
+                                            # print("start measure 333")
+                                            
+                                            # print("waypoint: {} - record.flag_go {}".format(Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], record.flag_go))
+                                            if (sense.pulses >= Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex]) and record.flag_go == 1:
                                                 
-                                                # print("waypoint: {} - record.flag_go {}".format(Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], record.flag_go))
-                                                if (sense.pulses >= Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex]) and record.flag_go == 1:
-                                                    
-                                                    print("start measure 4")
-                                                    print("pulses {} - waypoint {} - decimal factor: {}".format(sense.pulses, Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], sense.decimal_factor))
-                                                    if (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == " "):
-                                                        pass
-                                                    else:
-                                                        print("start measure 5")
-                                                        Main_Screen.comparison = record.get_sec(init_record, str(Routes_List_Screen.waypoint_time[Main_Screen.spIndex])) - round(Main_Screen.current_race_time, 2)  
+                                                print("start measure 4")
+                                                print("pulses {} - waypoint {} - decimal factor: {}".format(sense.pulses, Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], sense.decimal_factor))
+                                                if (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == " "):
+                                                    pass
+                                                else:
+                                                    print("start measure 5")
+                                                    Main_Screen.comparison = record.get_sec(init_record, str(Routes_List_Screen.waypoint_time[Main_Screen.spIndex])) - round(Main_Screen.current_race_time, 2)  
 
-                                                    Main_Screen.final_time = round(Main_Screen.current_race_time, 2)
-                                                    Main_Screen.record_time = str(datetime.timedelta(seconds = Main_Screen.final_time))
-                                                    Main_Screen.record_time = Main_Screen.record_time[:10]
-                                                    routes.get_data(
-                                                        routes_data,
-                                                        sense.pulses,#round(record.mph_accurate, 3),
-                                                        #int(record.mph_accurate),
-                                                        round(sense.dist_meas, 1),
-                                                        gps.latitude,
-                                                        gps.longitude,
-                                                        Main_Screen.record_time)
-                                                    Main_Screen.flag_race_mode = 1
-                                                    sense.aux_dist += 0.2
-                                                    Main_Screen.spIndex += 1 
-                                                    Main_Screen.key_1st_leg_end = False
+                                                Main_Screen.final_time = round(Main_Screen.current_race_time, 2)
+                                                Main_Screen.record_time = str(datetime.timedelta(seconds = Main_Screen.final_time))
+                                                Main_Screen.record_time = Main_Screen.record_time[:10]
+                                                routes.get_data(
+                                                    routes_data,
+                                                    sense.pulses,#round(record.mph_accurate, 3),
+                                                    #int(record.mph_accurate),
+                                                    round(sense.dist_meas, 1),
+                                                    gps.latitude,
+                                                    gps.longitude,
+                                                    Main_Screen.record_time)
+                                                Main_Screen.flag_race_mode = 1
+                                                sense.aux_dist += 0.2
+                                                Main_Screen.spIndex += 1 
+                                                Main_Screen.key_1st_leg_end = False
 
-                                                if sense.pulses > sense.end1StLeg and Main_Screen.bool_leg_already_elapsed == False and Main_Screen.key_1st_leg_end == True:
-                                                    STOP_BUTTON = 0
-                                                    sense.pulses = sense.end1StLeg
-                                                    Main_Screen.end1stLegTime = time.time()
-                                                    Main_Screen.bool_race_leg = True
-                                                    Main_Screen.bool_leg_already_elapsed = True
-                                                    Main_Screen.add_2nd_leg = True
-                                                    Main_Screen.key_1st_leg_end = False
+                                            if sense.pulses > sense.end1StLeg and Main_Screen.bool_leg_already_elapsed == False and Main_Screen.key_1st_leg_end == True:
+                                                STOP_BUTTON = 0
+                                                sense.pulses = sense.end1StLeg
+                                                Main_Screen.end1stLegTime = time.time()
+                                                Main_Screen.bool_race_leg = True
+                                                Main_Screen.bool_leg_already_elapsed = True
+                                                Main_Screen.add_2nd_leg = True
+                                                Main_Screen.key_1st_leg_end = False
                 else:
                     if STOP_BUTTON == 1:
                         if sense.elapse != 0: # This condition is to prevent zero division
