@@ -116,7 +116,6 @@ start_system = 0
 
 #clock_status = 0
 main_loop = 0
-input_loop = 0
 static_message_loop = 0 
 race_setup_screen_loop = 0
 
@@ -385,8 +384,6 @@ class Routes_List_Screen(Screen):
     def update_list_data(self, dt):
         limitLoadFiles = 10
         if Routes_List_Screen.key_file_list == True:
-            #self.check_for_usb()
-            print("testing usb file")
             list_1 = []
             index = -1
             out = subprocess.check_output("ls /home/pi/Documents/LoadRoute", shell=True)  # test for RPi
@@ -767,7 +764,7 @@ class Main_Screen(Screen):
         record.starter_time = 0
 
     def compareRoutes(self):
-        Main_Screen.dif_sec["seconds"] = Main_Screen.comparison
+        Main_Screen.dif_sec["seconds"] = round(Main_Screen.comparison, 3)
         # when t1 is greater than t2
         if(Main_Screen.dif_sec['seconds'] > 0):
             self.update_val.current_color = Main_Screen.red
@@ -871,11 +868,13 @@ class Main_Screen(Screen):
             IO.output(record.green1_led, False)
             IO.output(record.green5_led, False)
 
+    
+
     def update(self, dt):
         global TIRE_RADIUS_REF
         global start_system
         global STOP_BUTTON
-        global main_loop, input_loop, static_message_loop, race_setup_screen_loop
+        global main_loop, static_message_loop, race_setup_screen_loop
         try:
             # print("pulses: {}".format(sense.pulses))
             # ### TODO: IS REQUIRED TO ANALYZE WHY I did call this function 
@@ -884,6 +883,8 @@ class Main_Screen(Screen):
             # if (time.time() - Main_Screen.screen_ch > 30):
             #     print("30 seconds elapased")
             #     Main_Screen.screen_ch = time.time()
+
+            # self.clear_start_record() # check if conditions are met
 
             #     function2()
             
@@ -907,7 +908,6 @@ class Main_Screen(Screen):
             #print("end1stLegTimeDiff {}".format(Main_Screen.end1stLegTimeDiff))
             Main_Screen.end1stLegTimeDiff = int(time.time() - Main_Screen.end1stLegTime)
             if Main_Screen.bool_race_leg == True:
-                print("evaluate") 
                 #print("time time {}".format(Main_Screen.end1stLegTimeDiff))
                 if Main_Screen.end1stLegTimeDiff < 15:
                     #print("asdassadawda")
@@ -1122,35 +1122,15 @@ class Main_Screen(Screen):
                                     sense.race_started = True
                                     record.starter_time = -record.starter_time
                                     record.starter_time = record.starter_time + Main_Screen.leg_time 
-                                    #if Main_Screen.leg_time > 0:
-                                    #    record.starter_time = record.starter_time + Main_Screen.leg_time
-                                    #    Main_Screen.leg_time = 0
-                                    #record.starter_time = record.starter_time + Main_Screen.leg_time
                                     record.starter_time = round(record.starter_time, 2)
                                     sense.from_seconds_to_hours_gps = round((record.starter_time * 3600), 2)
                                     sense.flag_to_measure_dist = True 
-                                    #if record.numLeg == 2 and Main_Screen.add_2nd_leg == True:
-                                    #    record.starter_time = Main_Screen.leg_time
-                                    #    Main_Screen.add_2nd_leg = False
                                     Main_Screen.current_race_time = record.starter_time + .99999
                                     self.update_val.timer_update = self.count_time(Main_Screen.current_race_time)
                                     
-                #print("result {} and pulses {}".format(Main_Screen.result, sense.pulses))
-                #if record.numLeg == 1 or record.numLeg == None:
-                #self.raceCompare()             
-                #print("one leg and value: {}".format(record.numLeg))
-                #print("type: {}".format(type(record.numLeg)))
                 if(Main_Screen.flag_race_mode == 1):
                     print("flace race mode!!")
-                    #print("waypoint dist meas: {} and waypoint mph: {}".format(round(routes.waypoint_dist_meas[-1], 2), round(routes.waypoint_mph[-1], 2)))
-                    #if round(routes.waypoint_dist_meas[-1], 2) != 0 and round(routes.waypoint_mph[-1], 2) != 0:
-                    #    Main_Screen.calculate_time = (round(routes.waypoint_dist_meas[-1], 2) / round(routes.waypoint_mph[-1], 2))
-                    #    Main_Screen.calculate_time = Main_Screen.calculate_time * 3600 
-                        #print("calculated time: {}".format(Main_Screen.calculate_time))
-                    #print("list {} len {}".format(Routes_List_Screen.waypoint_dist_meas_from_datalogger, len(Routes_List_Screen.waypoint_dist_meas_from_datalogger)))
-                    #print("iterator {} and num of lists {} result {} and pulses {}".format(Main_Screen.my_iterator, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) - 1), Main_Screen.result, sense.pulses))
-                    #if Main_Screen.my_iterator >= (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) - 1):
-                    if Main_Screen.spIndex >= (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) - 1):
+                    if Main_Screen.spIndex >= (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger)):
                         #global STOP_BUTTON
                         global STOP_BUTTON
                         STOP_BUTTON = 0
@@ -1159,27 +1139,18 @@ class Main_Screen(Screen):
                         self.update_val.current_value = str(Main_Screen.comparison)
                         print("time!!: {}".format(str(Main_Screen.comparison)))
                         self.compareRoutes()
-                        #routes.waypoint_comparison_data.append(Main_Screen.comparison)
                         routes.waypoint_comparison_data.append(str(Main_Screen.result))
                         self.update_val.count_down_up = "Race Ended"
                         self.update_val.count_down_up = "Race Ended"
-                        #print("current data to input in spreadsheet about comparison {}".format(routes.waypoint_comparison_data))
-                        #self.update_val.current_value = str(Main_Screen.result)
-                        #print("last waypoint miles measured: {} current distance: {}".format(Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.my_iterator], sense.dist_meas))
+                        self.compareRoutes()
+                        routes.waypoint_comparison_data.append(str(Main_Screen.result))
                         print("FINISHED! Iterator {} is equal to last waypoint_counter: {} AND DISTANCE {}".format(Main_Screen.my_iterator, Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.my_iterator], sense.dist_meas))
                         main_loop.cancel()
-                        input_loop.cancel()
-                        #static_message_loop.cancel() 
                         race_setup_screen_loop.cancel()
-                        #Main_Screen.screen_1.cancel()
-                        #Main_Screen.screen_2.cancel()
-                        #Main_Screen.screen_3.cancel()
-                        #Main_Screen.screen_4.cancel()
 
                         
                     else:
                             
-                        print("doing my stuff")
                         if (Routes_List_Screen.waypoint_time[Main_Screen.my_iterator] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.my_iterator] == " "):
                             print("Routes_List_Screen.waypoint_time[Main_Screen.my_iterator] {}".format(Routes_List_Screen.waypoint_time[Main_Screen.my_iterator]))
                         else:
@@ -1187,7 +1158,6 @@ class Main_Screen(Screen):
                             self.compareRoutes()
                             #routes.waypoint_comparison_data.append(Main_Screen.comparison)
                             routes.waypoint_comparison_data.append(str(Main_Screen.result))
-                            print("current data to input in spreadsheet about comparison {}".format(routes.waypoint_comparison_data))
                         Main_Screen.my_iterator += 1
                         Main_Screen.flag_race_mode = 0
                         Main_Screen.key_1st_leg_end = True
@@ -1300,7 +1270,7 @@ class Confirmation_Screen_to_Save(Screen):
 
         def save_excel():
             global STOP_BUTTON
-            global main_loop, input_loop, static_message_loop, race_setup_screen_loop
+            global main_loop, static_message_loop, race_setup_screen_loop
 
             Save_File_Text_Input_Screen.message_manager = Static_Message.SAVING_LABEL
             guiApp.message_selected = Static_Message.SAVING_LABEL
@@ -1564,7 +1534,6 @@ class Confirmation_Screen_to_Save(Screen):
                 record.numLeg = 0    # Clear the value of the C2 cell on the spreadsheet
                 time.sleep(1)
                 main_loop()
-                input_loop()
                 static_message_loop()
                 race_setup_screen_loop()
                 #Main_Screen.screen1()
@@ -1582,6 +1551,7 @@ class Save_File_Text_Input_Screen(Screen):
     def get_name_of_the_file(self):
         
         self.text = self.save_text_file.text
+        print("text: {}".format(self.text))
         reg_file = re.split(r'^\s+', self.save_text_file.text)
         if len(reg_file) == 1:
             if len(reg_file[0]) == 0:
@@ -1610,9 +1580,36 @@ class Race_Setup_Screen(Screen):
     timeDiff = 0
     keyToMeasure = False
 
+    def get_seconds_from_gps(self, t_str):
+        h, m, s = t_str.split(":")
+        return int(h) * 3600 + int(m) * 60 + round(float(s), 2)
+
+    def clear_start_record(self):
+        if ((record.recording_status_flag == False) and ((record.flager == 1 and record.tm > (record.substracter_time - 1.18)) or (record.flager == 2 and record.tm > (record.substracter_time - 1.18)))):
+            #print("start!!!")
+            if record.numLeg == 1 or record.numLeg == None:
+                sense.startReadPulses = True
+                sense.pulses = 0 #sense.decimal_num 
+                sense.pulseAmount = sense.decimal_num 
+                sense.current_decimal_factor = sense.whole_num + sense.decimal_num
+                #sense.decimal_factor = sense.whole_num + sense.decimal_num
+                sense.dist_meas = 0
+                sense.counter_rotations = 0
+                record.stop_tm = True
+                # Set the actual time as a reference
+                record.start_2_count = self.get_seconds_from_gps(record.time_string) #- .85 #- .8 #- .95  # .95 
+                record.set_record_time = self.get_seconds_from_gps(record.time_string)#time.time() #record.get_sec(record,record.time_string) #time.time()
+                record.recording_status_flag = True # It will not refresh the reference record time until record has finished
+            elif record.numLeg == 2 or record.numLeg != 0:
+                #print("other stuff")
+                record.recording_status_flag = True # It will not refresh the reference record time until record has finished
+                sense.startReadPulses = True
+                record.start_2_count = self.get_seconds_from_gps(record.time_string) #- .85 #- .8 #- .95  # .95 
+                record.set_record_time = self.get_seconds_from_gps(record.time_string)#time.time() #record.get_sec(record,record.time_string) #time.time()
+
     def update(self, dt):
         
-        
+        self.clear_start_record()
         #if Race_Setup_Screen.clearStartButton == True:
         #    currentTime = int(time.time() - Race_Setup_Screen.time_to_clear)
         #    if currentTime >= 3:
@@ -1893,26 +1890,23 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                         del Routes_List_Screen.waypoint_dist_meas_from_datalogger[:]
                         del Routes_List_Screen.waypoint_time[:]
                         sense.end1StLeg = 0  # Clear the value of the D2 cell on the spreadsheet 
+                        sense.end2ndLeg = 0  # Clear the value of the D2 cell on the spreadsheet 
                         record.numLeg = 0    # Clear the value of the C2 cell on the spreadsheet
 
                         sense.end1StLeg = ws['E2'] # Read the value of the D2 cell on the spreadsheet 
                         sense.end1StLeg = sense.end1StLeg.value
 
+                        sense.end2ndLeg = ws['F2'] # Read the value of the D2 cell on the spreadsheet 
+                        sense.end2ndLeg = sense.end2ndLeg.value
+
                         record.numLeg = ws['D2']    # Read the value of the C2 cell on the spreadsheet
                         record.numLeg = record.numLeg.value
 
-                        # coords for point A
-                        # sense.coords_a_x = float(ws['D4'].value)
-                        # sense.coords_a_y = float(ws['D5'].value)
-                        # sense.coords_b_x = float(ws['E4'].value)
-                        # sense.coords_b_y = float(ws['E5'].value)
-                        # print("A: {}, {}, type:{}, {}".format(sense.coords_a_x, sense.coords_a_y, type(sense.coords_a_x), type(sense.coords_a_y)))
-                        # print("B: {}, {}, type:{}, {}".format(sense.coords_b_x, sense.coords_b_y, type(sense.coords_b_x), type(sense.coords_b_y)))
-
+                        tire_size_inch = ws['K1']    # Read the value of the C2 cell on the spreadsheet
+                        tire_size_inch = float(tire_size_inch.value)
+                        print("tire size: {}".format(tire_size_inch))
                         print("the number of leg is: {}".format(record.numLeg))
                         print("type of the leg is: {}".format(type(record.numLeg)))
-
-
 
                         # Read each cells from A column, we need the lenght to measure how much reads we need to do
                         for row in ws.iter_rows('A{}:A{}'.format(2, ws.max_row)):  # Set min and max 
@@ -1922,67 +1916,51 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                                         Routes_List_Screen.waypoint_dist_meas_from_datalogger.append(float(cell.value))
                                     except Exception as e:
                                         print("error here: {}".format(e))
+                        self.set_tire_rotation(Routes_List_Screen.waypoint_dist_meas_from_datalogger[0])
+                        sense.decimal_factor = self.get_tire_rotation()
+                        print("tire rotation is: {}".format(self.get_tire_rotation()))
+                        # Read each cells from B column, we need the lenght to measure how much reads we need to do
+                        for row in ws.iter_rows('B{}:B{}'.format(3, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) + 2))):
+                            for cell in row:
+                                #if cell == isinstance(record.numLeg, unicode) == True and 
+                                #print("data: {} type of data: {}".format(cell.value, type(cell.value)))
+                                Routes_List_Screen.waypoint_time.append(cell.value)
+                        print("loaded pulses {}".format(len(Routes_List_Screen.waypoint_dist_meas_from_datalogger)))
+                        print("time loaded {}".format(len(Routes_List_Screen.waypoint_time)))
+                        # exception handler for when the number leg is not valid 
+                        if record.numLeg == 1 and isinstance(record.numLeg, unicode) == False or record.numLeg == "" or record.numLeg == " " or record.numLeg == None:
+                            
+                            # calculate the end of leg 1 in pulses 
+                            target_pulses =  int(((sense.end1StLeg * 12) / tire_size_inch) * 5)
+                            sense.end1StLeg = target_pulses
+                            print("target pulses for 1st leg {}".format(target_pulses))
 
-                        # sense.speed_calc(init_sense)	# Call this function with tire radius as parameter
-                        if not Routes_List_Screen.waypoint_dist_meas_from_datalogger:
-                            guiApp.message_selected = Static_Message.INVALID_FORMAT
                         
-                        else:
-                            # sense.speed_calc(init_sense)	# Call this function with tire radius as parameter
-                            self.set_tire_rotation(Routes_List_Screen.waypoint_dist_meas_from_datalogger[0])
-                            sense.decimal_factor = self.get_tire_rotation()
-                            print("tire rotation is: {}".format(self.get_tire_rotation()))
-                            # Read each cells from B column, we need the lenght to measure how much reads we need to do
-                            for row in ws.iter_rows('B{}:B{}'.format(3, (len(Routes_List_Screen.waypoint_dist_meas_from_datalogger) + 2))):
-                                for cell in row:
-                                    #if cell == isinstance(record.numLeg, unicode) == True and 
-                                    #print("data: {} type of data: {}".format(cell.value, type(cell.value)))
-                                    Routes_List_Screen.waypoint_time.append(cell.value)
-                            print("loaded pulses {}".format(len(Routes_List_Screen.waypoint_dist_meas_from_datalogger)))
-                            print("time loaded {}".format(len(Routes_List_Screen.waypoint_time)))
-                            # exception handler for when the number leg is not valid 
-                            if record.numLeg == 1 and isinstance(record.numLeg, unicode) == False or record.numLeg == "" or record.numLeg == " " or record.numLeg == None:
-                                print("the number of leg is: {} and type {}".format(record.numLeg, type(record.numLeg)))
+                            print("the number of leg is: {} and type {}".format(record.numLeg, type(record.numLeg)))
+                            Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
+                            Routes_List_Screen.uploaded = 1
+                            self.change_name(Routes_List_Screen.file_to_load)
+                            Routes_List_Screen.file_already_loaded = True
+                            guiApp.message_selected = Static_Message.ROUTE_LOADED
+                        elif record.numLeg == 2 and record.numLeg != None and isinstance(record.numLeg, unicode) == False:
+                            print("it's 2nd leg")
+                            if sense.end1StLeg != None and isinstance(sense.end1StLeg, unicode) == False:
+                        
+                                
+                                # calculate the end of leg 1 in pulses 
+                                target_pulses =  int(((sense.end1StLeg * 12) / tire_size_inch) * 5)
+                                sense.end1StLeg = target_pulses
+                                print("target pulses for 1st leg {}".format(sense.end1StLeg))
+
+                                target_pulses =  int(((sense.end2ndLeg * 12) / tire_size_inch) * 5)
+                                sense.end2ndLeg = sense.end1StLeg + target_pulses
+                                print("target pulses for 2nd leg {}".format(sense.end2ndLeg))
+
                                 Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
                                 Routes_List_Screen.uploaded = 1
                                 self.change_name(Routes_List_Screen.file_to_load)
                                 Routes_List_Screen.file_already_loaded = True
                                 guiApp.message_selected = Static_Message.ROUTE_LOADED
-
-                                sense.startReadPulses = True
-                                sense.pulses = 0 #sense.decimal_num 
-                                sense.pulseAmount = sense.decimal_num 
-                                sense.current_decimal_factor = sense.whole_num + sense.decimal_num
-                                #sense.decimal_factor = sense.whole_num + sense.decimal_num
-                                sense.dist_meas = 0
-                                sense.counter_rotations = 0
-                                record.stop_tm = True
-                                # Set the actual time as a reference
-                                record.start_2_count = self.get_seconds_from_gps(record.time_string) #- .85 #- .8 #- .95  # .95 
-                                record.set_record_time = self.get_seconds_from_gps(record.time_string)#time.time() #record.get_sec(record,record.time_string) #time.time()
-                                record.recording_status_flag = True # It will not refresh the reference record time until record has finished
-                            elif record.numLeg == 2 and record.numLeg != None and isinstance(record.numLeg, unicode) == False:
-                                print("it's 2nd leg")
-                                if sense.end1StLeg != None and isinstance(sense.end1StLeg, unicode) == False:
-                                    print("end of leg is: {} and type {}".format(sense.end1StLeg, type(sense.end1StLeg)))
-                                    Routes_List_Screen.preloaded_route_done = 0 # set to 0 a preloaded route
-                                    Routes_List_Screen.uploaded = 1
-                                    self.change_name(Routes_List_Screen.file_to_load)
-                                    Routes_List_Screen.file_already_loaded = True
-
-                                    record.recording_status_flag = True # It will not refresh the reference record time until record has finished
-                                    sense.startReadPulses = True
-                                    record.start_2_count = self.get_seconds_from_gps(record.time_string) #- .85 #- .8 #- .95  # .95 
-                                    record.set_record_time = self.get_seconds_from_gps(record.time_string)
-                                    guiApp.message_selected = Static_Message.ROUTE_LOADED
-                                else:
-                                    sense.end1StLeg = 0
-                                    record.numLeg = 0
-                                    if Routes_List_Screen.file_already_loaded == True:
-                                        pass
-                                    else:
-                                        Main_Screen.update_val.text_gps = "NO ROUTE \nSELECTED"
-                                    guiApp.message_selected = Static_Message.INVALID_FORMAT
                             else:
                                 sense.end1StLeg = 0
                                 record.numLeg = 0
@@ -1991,6 +1969,14 @@ class Confirmation_Screen_To_Load(Screen):  # screen to confirm to load a route 
                                 else:
                                     Main_Screen.update_val.text_gps = "NO ROUTE \nSELECTED"
                                 guiApp.message_selected = Static_Message.INVALID_FORMAT
+                        else:
+                            sense.end1StLeg = 0
+                            record.numLeg = 0
+                            if Routes_List_Screen.file_already_loaded == True:
+                                pass
+                            else:
+                                Main_Screen.update_val.text_gps = "NO ROUTE \nSELECTED"
+                            guiApp.message_selected = Static_Message.INVALID_FORMAT
 
             except KeyError:
                 sense.end1StLeg = 0
@@ -2134,7 +2120,7 @@ class guiApp(App):
     message_selected = 0
 
     def build(self):
-        global main_loop, input_loop, static_message_loop, race_setup_screen_loop
+        global main_loop, static_message_loop, race_setup_screen_loop
         screen_1 = Main_Screen()
         screen_3 = Static_Message()
         screen_4 = Race_Setup_Screen()
@@ -2248,12 +2234,10 @@ def gps_thread():
                                             # print("waypoint: {} - record.flag_go {}".format(Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], record.flag_go))
                                             if (sense.pulses >= Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex]) and record.flag_go == 1:
                                                 
-                                                print("start measure 4")
                                                 print("pulses {} - waypoint {} - decimal factor: {}".format(sense.pulses, Routes_List_Screen.waypoint_dist_meas_from_datalogger[Main_Screen.spIndex], sense.decimal_factor))
                                                 if (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == None) or (Routes_List_Screen.waypoint_time[Main_Screen.spIndex] == " "):
                                                     pass
                                                 else:
-                                                    print("start measure 5")
                                                     Main_Screen.comparison = record.get_sec(init_record, str(Routes_List_Screen.waypoint_time[Main_Screen.spIndex])) - round(Main_Screen.current_race_time, 2)  
 
                                                 Main_Screen.final_time = round(Main_Screen.current_race_time, 2)
