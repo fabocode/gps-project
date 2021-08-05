@@ -3,7 +3,7 @@ import time
 pigpio_duty = 1e6
 
 pin = 21
-freq = 400 
+freq = 400
 duty = pigpio_duty * 0.5
 pi = pigpio.pi() 
 
